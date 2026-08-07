@@ -1,0 +1,9 @@
+# 수질 데이터 컬럼 매핑 파이프라인
+# 설치:  python3 -m pip install -r requirements.txt
+
+pandas>=2.0        # 데이터 파일 읽기, 리포트 생성
+rapidfuzz>=3.0     # 유사도 후보 제안 (fuzz.ratio)
+openpyxl>=3.1      # xlsx 읽기 (pandas가 내부적으로 사용)
+
+# 개발용
+pytest>=8.0

@@ -1,0 +1,33 @@
+﻿code,std_name,name_en,abbr,std_domain,value_type,facet,standard_basis,source_url,canonical_format,normalization_note,review_status,reviewed_by,reviewed_at,note
+MD-001,측정소명,Station Name,MSRSTN_NM,명V200,text,station,"공공데이터 공통표준용어(행정안전부, 20251101 8차)",https://www.data.go.kr/data/15156379/fileData.do,,소스마다 측정소명/조사지점명/시설명/하천명으로 부른다. 지점 마스터와 대조해 코드로 승격 필요,verified,,,공통표준용어 등재(5차 2022-07). 서울시 API의 MSRSTN_NM은 이 표준을 그대로 따른 사례
+MD-002,측정소코드,Station Code,MSRSTN_CD,코드,code,station,공통표준용어 미등재 — 공통표준단어 조합(기관표준용어),,,기관마다 코드 체계가 달라 그대로는 조인 불가,draft,,,공통표준용어 미등재(exact match 0건). 공통표준단어 측정소(MSRSTN)+코드(CD) 조합으로 만든 기관표준용어이며 공식 표준용어가 아니다. 근접 표준용어는 '측정지점번호' MSPT_NO(번호V50)
+MD-003,하천명,River Name,RVR_NM,명V100,text,station,"공공데이터 공통표준용어(행정안전부, 20251101 8차)",https://www.data.go.kr/data/15156379/fileData.do,,측정소명과 구분해야 한다. 하천명만 있고 지점이 없는 데이터가 존재,verified,,,공통표준용어 등재(5차 2022-07)
+MD-004,측정시설명,Facility Name,-,,text,station,"미확인 — 공통표준용어 13,176건 대조 필요",,,정수장·물재생센터 등 시설 단위 관측의 지점명,draft,,,
+MD-005,측정시설번호,Facility Number,-,,code,station,"미확인 — 공통표준용어 13,176건 대조 필요",,,,draft,,,
+MD-030,채수지점번호,Sampling Spot Number,MSPT_NO,번호V50,code,station,공통표준용어 '측정지점번호' 차용,,,,draft,,,근접 표준용어 '측정지점번호'(MSPT_NO)를 차용. 원 표기와 다르므로 확인 필요
+MD-006,측정일자,Measurement Date,MSRMT_YMD,연월일C8,date,time,"공공데이터 공통표준용어(행정안전부, 20251101 8차)",https://www.data.go.kr/data/15156379/fileData.do,YYYY-MM-DD,실데이터 포맷이 2012.02.03 / 20260805 / 2021-04-11로 제각각 — 적재 시 통일,verified,,,공통표준용어 등재(3차 2021-10). 저장 YYYYMMDD / 표현 YYYY-MM-DD
+MD-007,측정일시,Measurement Datetime,MSRMT_DT,연월일시분초D,timestamp,time,"공공데이터 공통표준용어(행정안전부, 20251101 8차)",https://www.data.go.kr/data/15156379/fileData.do,YYYY-MM-DD HH24:MI:SS,날짜와 시각이 분리된 소스는 결합해서 채운다,verified,,,공통표준용어 등재(4차 2021-12)
+MD-008,측정연도,Measurement Year,-,,integer,time,"미확인 — 공통표준용어 13,176건 대조 필요",,YYYY,연/월을 분리 저장하는 소스가 많다. 측정일자로 통합 가능하면 통합,draft,,,
+MD-009,측정월,Measurement Month,-,,integer,time,"미확인 — 공통표준용어 13,176건 대조 필요",,MM,'02'처럼 zero-pad 문자열로 오는 소스 있음,draft,,,
+MD-010,측정회차,Measurement Round,-,,text,time,"미확인 — 공통표준용어 13,176건 대조 필요",,,'1회차' 같은 문자열. 분기/회차 개념이 소스마다 다름,draft,,,
+MD-011,시료채취일자,Sampling Date,SPCM_PCKNG_YMD,연월일C8,date,time,"공공데이터 공통표준용어(행정안전부, 20251101 8차)",https://www.data.go.kr/data/15156379/fileData.do,YYYY-MM-DD,측정일자(MD-006)와 개념이 다를 수 있다(채수일 vs 분석일) — 소스별 정의 확인 필요,verified,,,공통표준용어 등재(7차 2024-11). 별도로 '채수일자' WTSMP_YMD도 등재돼 있어 어느 쪽을 쓸지 팀 규칙이 필요하다
+MD-012,측정시각,Measurement Time,-,,text,time,"미확인 — 공통표준용어 13,176건 대조 필요",,HH24:MI,,draft,,,
+MD-013,위도,Latitude,LAT,"위도N12,10",numeric,space,"공공데이터 공통표준용어(행정안전부, 20251101 8차)",https://www.data.go.kr/data/15156379/fileData.do,WGS84 십진도,국립환경과학원은 도/분/초 3개 필드로 분리 제공(latDgr/latMin/latSec) — 십진도 환산 필요,verified,,,"공통표준용어 등재(2차 2020-12), 소관 국토교통부. 표현형식 99.9999999999"
+MD-014,경도,Longitude,LOT,"경도N13,10",numeric,space,"공공데이터 공통표준용어(행정안전부, 20251101 8차)",https://www.data.go.kr/data/15156379/fileData.do,WGS84 십진도,동일하게 lonDgr/lonMin/lonSec 분리 제공,verified,,,"공통표준용어 등재(2차 2020-12), 소관 국토교통부. 표준 약어가 LNG/LON이 아니라 LOT다"
+MD-015,소재지주소,Address,LCTN_ADDR,주소V200,text,space,"공공데이터 공통표준용어(행정안전부, 20251101 8차)",https://www.data.go.kr/data/15156379/fileData.do,,,verified,,,공통표준용어 등재(4차 2021-12)
+MD-016,도로명주소,Road Name Address,ROAD_NM_ADDR,주소V200,text,space,"공공데이터 공통표준용어(행정안전부, 20251101 8차)",https://www.data.go.kr/data/15156379/fileData.do,,,verified,,,"공통표준용어 등재(2차 2020-12), 소관 행정안전부. 상세 주소는 제외한다고 명시됨"
+MD-017,시도명,Province Name,CTPV_NM,명V40,text,space,"공공데이터 공통표준용어(행정안전부, 20251101 8차)",https://www.data.go.kr/data/15156379/fileData.do,,'전라북도'처럼 개편 전 명칭이 데이터에 남아 있다(현 전북특별자치도),verified,,,공통표준용어 등재(2차 2020-12). 단어 시도=CTPV(Cities And Provinces)
+MD-018,시군구명,District Name,SGG_NM,명V40,text,space,"공공데이터 공통표준용어(행정안전부, 20251101 8차)",https://www.data.go.kr/data/15156379/fileData.do,,,verified,,,공통표준용어 등재(2차 2020-12)
+MD-019,법정동시군구코드,Legal District Code,STDG_SGG_CD,코드C3,code,space,"공공데이터 공통표준용어(행정안전부, 20251101 8차)",https://www.data.go.kr/data/15156379/fileData.do,3자리,"법정동코드 10자리 중 3~5번째 자리(110:종로구, 140:중구). 10자리 전체가 필요하면 '법정동코드' STDG_CD(코드C10)를 쓴다",verified,,,'시군구코드'는 공통표준용어에 없다(0건). 표준 명칭은 '법정동시군구코드'이므로 표준명을 그쪽으로 맞췄다. 소관 국토교통부
+MD-020,읍면동명,Town Name,-,,text,space,"미확인 — 공통표준용어 13,176건 대조 필요",,,,draft,,,
+MD-021,리명,Village Name,-,,text,space,"미확인 — 공통표준용어 13,176건 대조 필요",,,,draft,,,
+MD-022,기관명,Institution Name,INST_NM,명V200,text,organization,"공공데이터 공통표준용어(행정안전부, 20251101 8차)",https://www.data.go.kr/data/15156379/fileData.do,,,verified,,,공통표준용어 등재(2차 2020-12). 코드가 필요하면 '기관코드' INST_CD(코드C7). 초안의 '측정기관명'은 표준 명칭이 아니라 '기관명'이다
+MD-023,용수구분명,Water Use Type,-,,text,sampling,"미확인 — 공통표준용어 13,176건 대조 필요",,,생활정수/공업용수 등,draft,,,
+MD-024,채수수심,Sampling Depth,-,,numeric,sampling,"미확인 — 공통표준용어 13,176건 대조 필요",,m,국립환경과학원 wmdep. 같은 지점 다른 수심의 값이 별도 행으로 오는 경우 주의,draft,,,
+MD-025,측정결과적합여부,Compliance Result,-,,boolean,quality,"미확인 — 공통표준용어 13,176건 대조 필요",,,,draft,,,
+MD-026,초과항목명,Exceeded Item Name,-,,text,quality,"미확인 — 공통표준용어 13,176건 대조 필요",,,기준 초과 항목을 문자열로 담는다 — 측정항목 사전과 대조해 파싱 가능,draft,,,
+MD-027,행번호,Row Number,-,,integer,record,소스 관행,,,API 응답 전용. 데이터 자체의 의미는 없다,draft,,,
+MD-028,전체결과수,Total Count,-,,integer,record,소스 관행,,,API 페이징 메타,draft,,,
+MD-029,자료기준일자,Data Reference Date,DATA_CRTR_YMD,연월일C8,date,record,"공공데이터 공통표준용어(행정안전부, 20251101 8차)",https://www.data.go.kr/data/15156379/fileData.do,YYYY-MM-DD,관측일이 아니라 파일 갱신일이다. 측정일자(MD-006)와 절대 혼동하면 안 된다,verified,,,'데이터기준일자'는 공통표준용어에 없다(0건). '데이터'는 공통표준단어에도 없고 '자료'=DATA가 정식이므로 표준명을 '자료기준일자'로 맞췄다. 실데이터 컬럼은 '데이터기준일자'로 오므로 동의어로 등록
+MD-031,검사여부,Inspection Performed,-,,boolean,quality,"미확인 — 공통표준용어 13,176건 대조 필요",,,'검사'/'미검사' 2값. 측정 실시 자체의 여부이며 결과 적합여부(MD-025)와 다르다,draft,,,부산 약수터 수질검사에서 확인. 미검사 행은 측정값 컬럼이 전부 비어 있으므로 적재 시 결측 사유 플래그로 쓸 수 있다
+MD-032,미검사사유,Non-Inspection Reason,-,,text,quality,"미확인 — 공통표준용어 13,176건 대조 필요",,,자유 서술 텍스트. 코드화되어 있지 않다,draft,,,검사여부(MD-031)가 미검사일 때만 채워진다

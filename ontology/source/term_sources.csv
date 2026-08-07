@@ -1,0 +1,20 @@
+﻿source_id,source_name,organization,source_type,base_url,access_note,encoding,reliability
+LAW_ANNEX13,물환경보전법 시행규칙 별표 13 수질오염물질의 배출허용기준,환경부,legal,https://www.law.go.kr/법령/물환경보전법시행규칙,PDF 원문 19쪽 전문 대조 (개정 2025.3.20),UTF-8,legal
+LAW_ANNEX3,물환경보전법 시행규칙 별표 3 특정수질유해물질(제4조 관련),환경부,legal,https://www.law.go.kr/lsBylInfoPLinkR.do?bylCls=BE&lsNm=%EB%AC%BC%ED%99%98%EA%B2%BD%EB%B3%B4%EC%A0%84%EB%B2%95+%EC%8B%9C%ED%96%89%EA%B7%9C%EC%B9%99&bylNo=0003&bylBrNo=00,개정 2017.1.19. 33개 호 중 제11호 삭제 → 실제 32종. 특정수질유해물질 '목록'의 정본은 별표 3이며 별표 13의2는 폐수배출시설 적용기준(제35조의2)임,UTF-8,legal
+LAW_ENV_STD,환경정책기본법 시행령 별표 1 환경기준(제2조 관련),환경부,legal,https://www.law.go.kr/LSW/flDownload.do?flSeq=159452669,개정 2025.10.1. 하천/호소 생활환경기준 + 사람의 건강보호 기준. 별표 13과 같은 물질을 다르게 표기하는 사례 다수,UTF-8,legal
+LAW_DRINKING,먹는물 수질기준 및 검사 등에 관한 규칙 별표 1 먹는물의 수질기준(제2조 관련),환경부,legal,https://www.law.go.kr/LSW/flDownload.do?flSeq=158952499,개정 2021.9.16. 먹는물·수돗물 수질기준의 정본. 「먹는물관리법 시행규칙」 별표 1은 '환경영향조사의 조사항목'이지 수질기준이 아니다. 먹는물관리법 제5조3항과 수도법 제26조2항이 모두 이 규칙 제2조로 위임된다,UTF-8,legal
+LAW_WATERWORKS,수도법 시행규칙 (제22조의2 위생상의 조치 / 제22조의4 저수조 점검),환경부,legal,https://www.law.go.kr/법령/수도법시행규칙,잔류염소의 하한 기준이 여기 있다. 상한(4.0㎎/L)은 먹는물검사규칙 별표 1 제4호 가목 — 흔히 말하는 '수돗물 잔류염소 0.1~4.0'은 두 규칙의 합성이다,UTF-8,legal
+MOIS_STD_TERM,"행정안전부 공공데이터 공통표준용어(20251101, 8차)",행정안전부,standard,https://www.data.go.kr/data/15156379/fileData.do,"CSV 13,176건 전수 조회. 제정 고시 제2020-42호(2020.8.6.), 개정 제2020-66호(2020.12.10.). '수질' 포함 용어는 0건이나 수소이온농도·부유물질량·전기전도도는 개별 등재됨",UTF-8,standard
+NIER_WQ_API,국립환경과학원 수질 DB Open API — 물환경 수질측정망 운영결과,기후에너지환경부 국립환경과학원,spec,https://www.data.go.kr/data/15081073/openapi.do,"getWaterMeasuringList. 실호출은 ServiceKey 필요, 출력결과 명세표로 확인(77필드)",UTF-8,spec
+SEOUL_WPOS,서울 열린데이터광장 — 한강 및 주요지천 수질 측정 자료(OA-15488),서울특별시,api,http://openapi.seoul.go.kr:8088/sample/json/WPOSInformationTime/1/5/,인증키에 sample 입력 시 5건 무료 호출. 실제 응답 JSON에서 필드명 확인,UTF-8,observed
+GG_WATER_API,경기데이터드림 — 수도 정보 수질 현황(Wtrpipeinfowtrqultstus),경기도 / 제공: 한국수자원공사,api,https://data.gg.go.kr/portal/data/openapi/selectOpenApiMeta.do?infId=A8F378W1HRG03Q4GJHT423038583&infSeq=2,"정수장 수질. 메타 JSON은 비로그인 조회 가능, 실호출은 인증키 필요",UTF-8,spec
+GG_SPRING_API,경기데이터드림 — 약수터 수질측정 결과 현황,경기도,api,https://data.gg.go.kr/portal/data/service/selectServicePage.do?infId=3PS7152M60Q0ZAG0427012039966&infSeq=3,출력필드 19개를 상세페이지 명세에서 확인,UTF-8,spec
+DATAGO_JB,전북특별자치도 보건환경연구원 하천수질측정망,전북특별자치도,file,https://www.data.go.kr/data/3038768/fileData.do,"CSV 직접 다운로드 12,846행(2010.01~2023.12). 헤더 실측",CP949,observed
+DATAGO_JEJU,제주특별자치도 하천수질조사결과,제주특별자치도,file,https://www.data.go.kr/data/15064129/fileData.do,CSV 헤더 실측,CP949,observed
+DATAGO_ANYANG,경기도 안양시 안양천 수질측정 정보,경기도 안양시,file,https://www.data.go.kr/data/3079518/fileData.do,CSV 헤더 실측. 원문에 '총소질소' 오타 존재,CP949,observed
+DATAGO_GIMHAE,경상남도 김해시 하천수질 현황,경상남도 김해시,file,https://www.data.go.kr/data/15092533/fileData.do,CSV 헤더 실측. 단위를 컬럼명 안에 표기하는 사례,CP949,observed
+DATAGO_INCHEON,인천광역시 수질오염,인천광역시,file,https://www.data.go.kr/data/15066383/fileData.do,CSV 헤더 실측. 하천명이 컬럼명에 병합된 wide 피벗 구조,CP949,observed
+DATAGO_DANGJIN,충청남도 당진시 상수도 수질검사,충청남도 당진시,file,https://www.data.go.kr/,CSV 헤더 실측(60항목). UTF-8 BOM,UTF-8 BOM,observed
+DATAGO_BUSAN,부산광역시 약수터 수질검사,부산광역시,file,https://www.data.go.kr/,CSV 헤더 실측,CP949,observed
+DRAFT_AI,팀 내부 초안 (수질_측정항목_표준사전_초안.xlsx),팀 자체 작성,manual,,AI가 생성한 미검증 표기. 법령·실데이터로 확인되기 전에는 근거로 인용 금지,UTF-8,inferred
+MANUAL,사람이 직접 입력,팀 자체 작성,manual,,운영 중 수기 추가분,UTF-8,inferred

@@ -1,0 +1,76 @@
+﻿code,name_ko,name_en,abbr,synonyms,unit,category,legal_basis,verified,note,legal_status,is_toxic_substance,toxic_substance_basis,legal_article,legal_effective_from,synonym_count,source_count
+WQ-001,생물화학적산소요구량,Biochemical Oxygen Demand,BOD,itemBod|생화학적 산소요구량|생물학적 산소요구량|BOD5|비오디,㎎/L,유기물,물환경보전법 시행규칙 별표 13,Y,별표 13 가목 2) 표. 같은 표 안에서 '생물화학적 산소요구량'(띄어쓰기)으로도 표기됨 — 동의어로 등록,statutory,False,별표 3 목록에 없음,제34조,2020-01-01,10,8
+WQ-002,총유기탄소량,Total Organic Carbon,TOC,itemToc|TOT_OC|총 유기탄소|티오씨,㎎/L,유기물,물환경보전법 시행규칙 별표 13,Y,2020.1.1부터 COD를 대체한 현행 유기물 지표,statutory,False,별표 3 목록에 없음,제34조,2020-01-01,8,7
+WQ-003,화학적산소요구량,Chemical Oxygen Demand,COD,itemCod|CODMn|CODCr|씨오디,㎎/L,유기물,물환경보전법 시행규칙 별표 13,Y,"별표 13 가목 1), 2019.12.31까지 적용. 과거 데이터 호환용 — 현행 기준으로 쓰면 안 됨",superseded,False,,제34조,2008-01-01,9,6
+WQ-004,부유물질량,Suspended Solids,SS,itemSs|부유물질|SSQTY|현탁물질|에스에스,㎎/L,일반,물환경보전법 시행규칙 별표 13,Y,,statutory,False,별표 3 목록에 없음,제34조,2020-01-01,10,8
+WQ-008,수소이온농도,Hydrogen Ion Concentration,pH,itemPh|TOT_PH|PH_ITEM_VL|HION_DNST|산도|피에이치|수소이온지수,-,일반,물환경보전법 시행규칙 별표 13,Y,법령은 단위 없이 범위(5.8~8.6)로 규정,statutory,False,별표 3 목록에 없음,제34조,2021-01-01,14,12
+WQ-012,노말헥산추출물질함유량 광유류,"n-Hexane Extractable Material, Mineral Oil",n-H광유,노르말헥산추출물질,㎎/L,유류,물환경보전법 시행규칙 별표 13,Y,'노말헥산추출물질함유량' 아래 광유류/동식물유지류 2개 행으로 규정 — 별개 항목으로 분리해야 함,statutory,False,별표 3 목록에 없음,제34조,2021-01-01,1,1
+WQ-013,노말헥산추출물질함유량 동식물유지류,"n-Hexane Extractable Material, Animal and Vegetable Fats and Oils",n-H동식물,itemNhex,㎎/L,유류,물환경보전법 시행규칙 별표 13,Y,,statutory,False,별표 3 목록에 없음,제34조,2021-01-01,1,1
+WQ-015,페놀류함유량,Phenols,,itemPhenol|페놀류|페놀류화합물,㎎/L,유해물질,물환경보전법 시행규칙 별표 13,Y,단일물질 '페놀'(WQ-030)과 별개 항목. 법령에 두 행이 따로 있음,statutory,False,별표 3 목록에 없음,제34조,2021-01-01,3,3
+WQ-030,페놀,Phenol,,PHNL|석탄산,㎎/L,유해물질,물환경보전법 시행규칙 별표 13,Y,2017.1.1 기준부터 별도 항목으로 신설,statutory,True,물환경보전법 시행규칙 별표 3 제29호(페놀),제34조,2017-01-01,3,3
+WQ-031,펜타클로로페놀,Pentachlorophenol,PCP,,㎎/L,유해물질,물환경보전법 시행규칙 별표 13,Y,,statutory,True,물환경보전법 시행규칙 별표 3 제30호(펜타클로로페놀),제34조,2017-01-01,0,0
+WQ-016,시안함유량,Cyanide,CN,itemCn|시안화합물|시안(CN)|시안화물,㎎/L,유해물질,물환경보전법 시행규칙 별표 13,Y,,statutory,True,물환경보전법 시행규칙 별표 3 제5호(시안화합물),제34조,2021-01-01,7,6
+WQ-017,크롬함유량,Chromium,Cr,itemCr|크롬|총크롬,㎎/L,중금속,물환경보전법 시행규칙 별표 13,Y,총크롬. 6가크롬(WQ-018)과 별개,statutory,False,별표 3 목록에 없음,제34조,2021-01-01,3,3
+WQ-025,용해성철함유량,Dissolved Iron,Fe,itemFe|용존철,㎎/L,중금속,물환경보전법 시행규칙 별표 13,Y,,statutory,False,별표 3 목록에 없음,제34조,2021-01-01,2,2
+WQ-024,아연함유량,Zinc,Zn,itemZn|아연화합물,㎎/L,중금속,물환경보전법 시행규칙 별표 13,Y,,statutory,False,별표 3 목록에 없음,제34조,2021-01-01,2,2
+WQ-023,구리(동)함유량,Copper,Cu,itemCu|구리와 그 화합물|구리화합물,㎎/L,중금속,물환경보전법 시행규칙 별표 13,Y,법령 표기에 한자어 '동'이 괄호로 병기됨,statutory,True,물환경보전법 시행규칙 별표 3 제1호(구리와 그 화합물),제34조,2021-01-01,6,5
+WQ-019,카드뮴함유량,Cadmium,Cd,itemCd|카드뮴과 그 화합물|카드뮴(Cd)|카드뮴화합물,㎎/L,중금속,물환경보전법 시행규칙 별표 13,Y,,statutory,True,물환경보전법 시행규칙 별표 3 제8호(카드뮴과 그 화합물),제34조,2021-01-01,4,4
+WQ-020,수은함유량,Mercury,Hg,itemHg|수은과 그 화합물|수은(Hg)|수은화합물,㎎/L,중금속,물환경보전법 시행규칙 별표 13,Y,,statutory,True,물환경보전법 시행규칙 별표 3 제4호(수은과 그 화합물),제34조,2021-01-01,4,4
+WQ-028,유기인함유량,Organophosphorus Compounds,OP,itemOp|유기인 화합물|유기인,㎎/L,유해물질,물환경보전법 시행규칙 별표 13,Y,,statutory,True,물환경보전법 시행규칙 별표 3 제6호(유기인 화합물),제34조,2021-01-01,4,4
+WQ-022,비소함유량,Arsenic,As,itemAs|비소와 그 화합물|비소(As)|비소화합물,㎎/L,중금속,물환경보전법 시행규칙 별표 13,Y,,statutory,True,물환경보전법 시행규칙 별표 3 제3호(비소와 그 화합물),제34조,2021-01-01,4,4
+WQ-021,납함유량,Lead,Pb,itemPb|납과 그 화합물|납(Pb)|연|납화합물,㎎/L,중금속,물환경보전법 시행규칙 별표 13,Y,,statutory,True,물환경보전법 시행규칙 별표 3 제2호(납과 그 화합물),제34조,2021-01-01,5,4
+WQ-018,6가크롬함유량,Hexavalent Chromium,Cr6+,itemCr6|6가크롬 화합물|6가 크롬(Cr6+)|육가크롬|Cr-VI,㎎/L,중금속,물환경보전법 시행규칙 별표 13,Y,,statutory,True,물환경보전법 시행규칙 별표 3 제7호(6가크롬 화합물),제34조,2021-01-01,5,4
+WQ-026,용해성망간함유량,Dissolved Manganese,Mn,itemMn|용존망간,㎎/L,중금속,물환경보전법 시행규칙 별표 13,Y,,statutory,False,별표 3 목록에 없음,제34조,2021-01-01,2,2
+WQ-027,플로오르(불소)함유량,Fluorine (Fluoride),F,itemFl|플루오르(불소)함유량|플루오린|플루오르,㎎/L,유해물질,물환경보전법 시행규칙 별표 13,Y,법령 원문 표기가 '플로오르(불소)'. 초안의 '플루오린'은 법령 표기가 아니므로 동의어로 강등,statutory,False,별표 3 목록에 없음,제34조,2021-01-01,6,4
+WQ-029,PCB함유량,Polychlorinated Biphenyls,PCB,itemPcb|폴리클로리네이티드바이페닐(PCB)함유량|폴리클로리네이티드바이페닐|폴리클로리네이티드비페닐(PCB)|PCBs|폴리염화비페닐,㎎/L,유해물질,물환경보전법 시행규칙 별표 13,Y,2019~2020 기준표에서는 '폴리클로리네이티드바이페닐(PCB)함유량'으로 표기 — 동의어 등록,statutory,True,물환경보전법 시행규칙 별표 3 제12호(폴리클로리네이티드바이페닐),제34조,2021-01-01,6,5
+WQ-011,총대장균군,Total Coliforms,TC,itemTcoli|총대장균군수|대장균군,군수/㎖,미생물,물환경보전법 시행규칙 별표 13,Y,법령 표기: 총대장균군(群)(총대장균군수)(㎖),statutory,False,별표 3 목록에 없음,제34조,2021-01-01,9,9
+WQ-010,색도,Color,,itemCol,도,일반,물환경보전법 시행규칙 별표 13,Y,섬유염색·펄프 등 일부 시설에만 적용되는 기준,statutory,False,별표 3 목록에 없음,제34조,2021-01-01,2,2
+WQ-009,온도,Temperature,,itemTemp|WATT|수온,℃,일반,물환경보전법 시행규칙 별표 13,Y,법령 표기는 '온도'. 실데이터는 대부분 '수온'으로 쓴다,statutory,False,별표 3 목록에 없음,제34조,2021-01-01,7,6
+WQ-005,총질소,Total Nitrogen,T-N,itemTn|TOT_N|총소질소,㎎/L,영양염류,물환경보전법 시행규칙 별표 13,Y,,statutory,False,별표 3 목록에 없음,제34조,2021-01-01,9,7
+WQ-006,총인,Total Phosphorus,T-P,itemTp|TOT_TP,㎎/L,영양염류,물환경보전법 시행규칙 별표 13,Y,,statutory,False,별표 3 목록에 없음,제34조,2021-01-01,10,8
+WQ-032,트리클로로에틸렌,Trichloroethylene,TCE,itemTce|트리클로로에텐,㎎/L,휘발성유기화합물,물환경보전법 시행규칙 별표 13,Y,,statutory,True,물환경보전법 시행규칙 별표 3 제10호(트리클로로에틸렌),제34조,2021-01-01,2,2
+WQ-033,테트라클로로에틸렌,Tetrachloroethylene,PCE,itemPce|퍼클로로에틸렌|테트라클로로에텐,㎎/L,휘발성유기화합물,물환경보전법 시행규칙 별표 13,Y,,statutory,True,물환경보전법 시행규칙 별표 3 제9호(테트라클로로에틸렌),제34조,2021-01-01,4,3
+WQ-014,음이온계면활성제,Anionic Surfactants,ABS,itemAbs|세제(음이온 계면활성제)|MBAS,㎎/L,일반,물환경보전법 시행규칙 별표 13,Y,,statutory,False,별표 3 목록에 없음,제34조,2021-01-01,5,4
+WQ-034,벤젠,Benzene,,itemBenzene,㎎/L,휘발성유기화합물,물환경보전법 시행규칙 별표 13,Y,,statutory,True,물환경보전법 시행규칙 별표 3 제14호(벤젠),제34조,2021-01-01,2,2
+WQ-035,디클로로메탄,Dichloromethane,DCM,itemDcm|염화메틸렌|메틸렌클로라이드,㎎/L,휘발성유기화합물,물환경보전법 시행규칙 별표 13,Y,,statutory,True,물환경보전법 시행규칙 별표 3 제16호(디클로로메탄),제34조,2021-01-01,4,3
+WQ-007,생태독성,Ecological Toxicity,TU,독성단위|물벼룩 급성독성,TU,생태독성,물환경보전법 시행규칙 별표 13,Y,법령 표기: 생태독성(TU). 물벼룩 급성독성시험 기준,statutory,False,별표 3 목록에 없음,제34조,2021-01-01,3,2
+WQ-045,셀레늄함유량,Selenium,Se,itemSe|셀레늄과 그 화합물|셀렌,㎎/L,중금속,물환경보전법 시행규칙 별표 13,Y,,statutory,True,물환경보전법 시행규칙 별표 3 제13호(셀레늄과 그 화합물),제34조,2021-01-01,3,3
+WQ-048,사염화탄소,Carbon Tetrachloride,,itemCcl4,㎎/L,휘발성유기화합물,물환경보전법 시행규칙 별표 13,Y,초안 누락분,statutory,True,물환경보전법 시행규칙 별표 3 제15호(사염화탄소),제34조,2021-01-01,2,2
+WQ-036,"1,1-디클로로에틸렌","1,1-Dichloroethylene","1,1-DCE","itemDceth|1,1-디클로로에텐",㎎/L,휘발성유기화합물,물환경보전법 시행규칙 별표 13,Y,,statutory,True,"물환경보전법 시행규칙 별표 3 제17호(1, 1-디클로로에틸렌)",제34조,2021-01-01,3,3
+WQ-049,"1,2-디클로로에탄","1,2-Dichloroethane","1,2-DCE",,㎎/L,휘발성유기화합물,물환경보전법 시행규칙 별표 13,Y,초안 누락분,statutory,True,"물환경보전법 시행규칙 별표 3 제18호(1, 2-디클로로에탄)",제34조,2021-01-01,2,2
+WQ-037,클로로포름,Chloroform,,itemChcl3|트리클로로메탄,㎎/L,휘발성유기화합물,물환경보전법 시행규칙 별표 13,Y,,statutory,True,물환경보전법 시행규칙 별표 3 제19호(클로로포름),제34조,2021-01-01,3,3
+WQ-050,니켈,Nickel,Ni,itemNi,㎎/L,중금속,물환경보전법 시행규칙 별표 13,Y,초안 누락분,statutory,False,별표 3 목록에 없음,제34조,2021-01-01,1,1
+WQ-046,바륨,Barium,Ba,itemBa,㎎/L,중금속,물환경보전법 시행규칙 별표 13,Y,,statutory,False,별표 3 목록에 없음,제34조,2021-01-01,1,1
+WQ-038,"1,4-다이옥산","1,4-Dioxane",,"itemDiox|1,4-다이옥세인|다이옥산",㎎/L,유해물질,물환경보전법 시행규칙 별표 13,Y,"법령 원문은 '1,4-다이옥산'. 초안의 '1,4-다이옥세인'은 법령 표기가 아님 — 동의어로 강등",statutory,True,"물환경보전법 시행규칙 별표 3 제20호(1,4-다이옥산)",제34조,2021-01-01,4,4
+WQ-051,디에틸헥실프탈레이트(DEHP),Di-2-ethylhexyl Phthalate,DEHP,itemDehp,㎎/L,유해물질,물환경보전법 시행규칙 별표 13,Y,초안 누락분,statutory,True,물환경보전법 시행규칙 별표 3 제21호(디에틸헥실프탈레이트(DEHP)),제34조,2021-01-01,2,2
+WQ-052,염화비닐,Vinyl Chloride,VC,,㎎/L,휘발성유기화합물,물환경보전법 시행규칙 별표 13,Y,초안 누락분,statutory,True,물환경보전법 시행규칙 별표 3 제22호(염화비닐),제34조,2021-01-01,0,0
+WQ-040,아크릴로니트릴,Acrylonitrile,AN,,㎎/L,유해물질,물환경보전법 시행규칙 별표 13,Y,,statutory,True,물환경보전법 시행규칙 별표 3 제23호(아크릴로니트릴),제34조,2021-01-01,0,0
+WQ-053,브로모포름,Bromoform,,,㎎/L,휘발성유기화합물,물환경보전법 시행규칙 별표 13,Y,초안 누락분,statutory,True,물환경보전법 시행규칙 별표 3 제24호(브로모포름),제34조,2021-01-01,0,0
+WQ-041,나프탈렌,Naphthalene,,,㎎/L,유해물질,물환경보전법 시행규칙 별표 13,Y,,statutory,True,물환경보전법 시행규칙 별표 3 제26호(나프탈렌),제34조,2016-01-01,0,0
+WQ-039,폼알데하이드,Formaldehyde,HCHO,itemHcho|포름알데히드,㎎/L,유해물질,물환경보전법 시행규칙 별표 13,Y,법령 원문은 '폼알데하이드'. 초안의 '포름알데히드'는 법령 표기가 아님 — 동의어로 강등,statutory,True,물환경보전법 시행규칙 별표 3 제27호(폼알데하이드),제34조,2016-01-01,3,3
+WQ-054,에피클로로하이드린,Epichlorohydrin,,,㎎/L,유해물질,물환경보전법 시행규칙 별표 13,Y,초안 누락분,statutory,True,물환경보전법 시행규칙 별표 3 제28호(에피클로로하이드린),제34조,2016-01-01,0,0
+WQ-055,톨루엔,Toluene,,,㎎/L,휘발성유기화합물,물환경보전법 시행규칙 별표 13,Y,초안 누락분,statutory,False,별표 3 목록에 없음,제34조,2016-01-01,1,1
+WQ-056,자일렌,Xylene,,크실렌,㎎/L,휘발성유기화합물,물환경보전법 시행규칙 별표 13,Y,초안 누락분,statutory,False,별표 3 목록에 없음,제34조,2016-01-01,1,1
+WQ-057,퍼클로레이트,Perchlorate,,,㎎/L,유해물질,물환경보전법 시행규칙 별표 13,Y,초안 누락분. 기초무기화학물질·비철금속 제련 시설은 별도 기준 적용,statutory,False,별표 3 목록에 없음,제34조,2019-01-01,0,0
+WQ-043,아크릴아미드,Acrylamide,,,㎎/L,유해물질,물환경보전법 시행규칙 별표 13,Y,,statutory,True,물환경보전법 시행규칙 별표 3 제25호(아크릴아미드),제34조,2019-01-01,0,0
+WQ-044,스티렌,Styrene,,스타이렌,㎎/L,휘발성유기화합물,물환경보전법 시행규칙 별표 13,Y,,statutory,True,물환경보전법 시행규칙 별표 3 제31호(스티렌),제34조,2019-01-01,1,1
+WQ-058,비스(2-에틸헥실)아디페이트,Bis-2-ethylhexyl Adipate,DEHA,,㎎/L,유해물질,물환경보전법 시행규칙 별표 13,Y,초안 누락분,statutory,True,물환경보전법 시행규칙 별표 3 제32호(비스(2-에틸헥실)아디페이트),제34조,2019-01-01,0,0
+WQ-059,안티몬,Antimony,Sb,itemAntimon,㎎/L,중금속,물환경보전법 시행규칙 별표 13,Y,초안 누락분,statutory,True,물환경보전법 시행규칙 별표 3 제33호(안티몬),제34조,2019-01-01,2,2
+WQ-047,주석,Tin,Sn,,㎎/L,중금속,물환경보전법 시행규칙 별표 13,Y,,statutory,False,별표 3 목록에 없음,제34조,2021-01-01,0,0
+WQ-060,용존산소량,Dissolved Oxygen,DO,itemDoc|TOT_DO|용존산소,㎎/L,일반,환경정책기본법 시행령 별표 1 환경기준(제2조 관련) — 하천 생활환경 기준,Y,배출허용기준 항목은 아니지만 하천 환경기준의 정식 항목이자 하천 데이터의 핵심 컬럼,non_statutory,False,,제34조,,6,6
+WQ-061,클로로필-a,Chlorophyll-a,Chl-a,itemCloa|클로로필,㎎/㎥,일반,환경정책기본법 시행령 별표 1 환경기준(제2조 관련) — 호소 생활환경 기준,Y,하천 기준에는 없고 '호소' 기준에만 있는 항목. 법령 단위는 ㎎/㎥이나 데이터는 ㎎/L로 오는 경우가 있어 값 해석 시 1000배 차이 주의,non_statutory,False,,제34조,,3,3
+WQ-062,전기전도도,Electrical Conductivity,EC,itemEc|ELCD,μS/㎝,일반,공공데이터 공통표준용어(ELCD),N,환경정책기본법 시행령 별표 1 전문 검색 결과 0건 — 환경기준 항목이 아님. 공통표준용어에는 '전기전도도 ELCD'로 등재. 측정 근거는 수질오염공정시험기준에서 재확인 필요,non_statutory,False,,제34조,,3,3
+WQ-063,분원성대장균군,Fecal Coliforms,FC,itemEcoli|분원성대장균군수|대장균·분원성 대장균군,군수/100mL,미생물,환경정책기본법 시행령 별표 1 환경기준(제2조 관련) — 하천 생활환경 기준,Y,환경기준 단위는 군수/100mL. 별표 13의 총대장균군은 군수/㎖ — 단위 기준이 서로 다르다,non_statutory,False,,제34조,,7,6
+WQ-064,암모니아성 질소,Ammonia Nitrogen,NH3-N,itemNh3n,㎎/L,영양염류,먹는물 수질기준 및 검사 등에 관한 규칙 별표 1(제2조 관련) 제2호 아목,Y,기준 0.5㎎/L. 법령 표기에 공백이 있다('암모니아성 질소'),non_statutory,False,,제34조,,2,2
+WQ-065,질산성 질소,Nitrate Nitrogen,NO3-N,itemNo3n,㎎/L,영양염류,먹는물 수질기준 및 검사 등에 관한 규칙 별표 1(제2조 관련) 제2호 자목,Y,기준 10㎎/L. 법령 표기에 공백이 있다('질산성 질소'),non_statutory,False,,제34조,,3,3
+WQ-066,인산염 인,Phosphate Phosphorus,PO4-P,itemPop,㎎/L,영양염류,수질오염공정시험기준,N,,non_statutory,False,,제34조,,2,2
+WQ-067,용존총질소,Dissolved Total Nitrogen,DTN,itemDtn,㎎/L,영양염류,수질오염공정시험기준,N,,non_statutory,False,,제34조,,1,1
+WQ-068,용존총인,Dissolved Total Phosphorus,DTP,itemDtp,㎎/L,영양염류,수질오염공정시험기준,N,,non_statutory,False,,제34조,,2,2
+WQ-069,탁도,Turbidity,NTU,TUBDTY_ITEM_VL,NTU,일반,먹는물 수질기준 및 검사 등에 관한 규칙 별표 1(제2조 관련) 제5호 파목,Y,"기준 1NTU, 수돗물은 0.5NTU. 정수장은 수도법 시행규칙 별표 5의3이 별도 기준(0.3NTU)을 둔다",non_statutory,False,,제34조,,3,3
+WQ-070,잔류염소(유리잔류염소를 말한다),Residual Chlorine (Free),,RSDLCR_ITEM_VL|유리잔류염소,㎎/L,일반,먹는물 수질기준 및 검사 등에 관한 규칙 별표 1(제2조 관련) 제4호 가목,Y,"괄호 정의문까지가 법령상 항목명이다. 상한 4.0㎎/L는 이 규칙, 하한 0.1㎎/L는 수도법 시행규칙 제22조의2제1항제3호 — '수돗물 0.1~4.0'은 단일 조문이 아니라 두 규칙의 합성이다",non_statutory,False,,제34조,,3,2
+WQ-071,일반세균,Heterotrophic Plate Count,,일반세균 중온|저온일반세균|중온일반세균,CFU/mL,미생물,먹는물 수질기준 및 검사 등에 관한 규칙 별표 1(제2조 관련) 제1호 가목,Y,기준 100CFU/mL. 샘물·염지하수는 저온일반세균/중온일반세균으로 나뉜다,non_statutory,False,,제34조,,4,3
+WQ-072,과망간산칼륨 소비량,Potassium Permanganate Consumption,,,㎎/L,유기물,먹는물 수질기준 및 검사 등에 관한 규칙 별표 1(제2조 관련) 제5호 나목,Y,기준 10㎎/L. 법령 표기에 공백이 있다('과망간산칼륨 소비량'),non_statutory,False,,제34조,,1,1
+WQ-073,투명도,Transparency,,itemTrans,m,일반,수질오염공정시험기준,N,국립환경과학원 API 명세는 단위를 ㎎/L로 적어 두었으나 실제로는 길이 단위 — 명세 오류로 보임,non_statutory,False,,제34조,,1,1
+WQ-074,수위,Water Level,,itemLvl,m,수문,,N,수질 항목이 아니라 수문 관측값,non_statutory,False,,제34조,,1,1
+WQ-075,유량,Flow Rate,,itemAmnt,㎥/s,수문,,N,,non_statutory,False,,제34조,,1,1
+WQ-076,헥사클로로벤젠,Hexachlorobenzene,HCB,itemHcb,㎎/L,유해물질,환경정책기본법 시행령 별표 1 환경기준(제2조 관련) — 하천 사람의 건강보호 기준,Y,별표 13 배출허용기준에는 없고 환경기준(사람의 건강보호)에 있는 항목. 국립환경과학원 API의 itemHcb가 여기에 대응한다,non_statutory,False,,제34조,,2,2
