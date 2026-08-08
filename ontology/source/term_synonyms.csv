@@ -151,6 +151,11 @@ measurement,WQ-063,,분원성대장균군,DATAGO_BUSAN,2026-08-05,https://www.da
 measurement,WQ-064,,암모니아성 질소,DATAGO_BUSAN,2026-08-05,https://www.data.go.kr/,"번호,공동시설명,검사여부,미검사사유,검사일자,검사결과,일반세균 중온,...",column_name,verified,
 measurement,WQ-065,,질산성 질소,DATAGO_BUSAN,2026-08-05,https://www.data.go.kr/,"번호,공동시설명,검사여부,미검사사유,검사일자,검사결과,일반세균 중온,...",column_name,verified,
 measurement,WQ-072,,과망간산칼륨소비량,DATAGO_BUSAN,2026-08-05,https://www.data.go.kr/,"번호,공동시설명,검사여부,미검사사유,검사일자,검사결과,일반세균 중온,...",column_name,verified,
+metadata,,MD-004,공동시설명,DATAGO_BUSAN,2026-08-05,https://www.data.go.kr/,"번호,공동시설명,검사여부,미검사사유,검사일자,검사결과,...",column_name,draft,약수터는 정수장이 아니라 공동이용시설이라 시설명 계열로 본다
+metadata,,MD-006,검사일자,DATAGO_BUSAN,2026-08-05,https://www.data.go.kr/,"번호,공동시설명,검사여부,미검사사유,검사일자,검사결과,...",column_name,draft,값이 YYYY-MM-DD 날짜임을 실데이터로 확인
+metadata,,MD-025,검사결과,DATAGO_BUSAN,2026-08-05,https://www.data.go.kr/,"번호,공동시설명,검사여부,미검사사유,검사일자,검사결과,...",column_name,draft,고유값이 '적합'/'부적합' 2종뿐이므로 측정치가 아니라 적합여부 판정이다
+metadata,,MD-031,검사여부,DATAGO_BUSAN,2026-08-05,https://www.data.go.kr/,"번호,공동시설명,검사여부,미검사사유,검사일자,검사결과,...",column_name,draft,고유값 '검사'/'미검사' 2종
+metadata,,MD-032,미검사사유,DATAGO_BUSAN,2026-08-05,https://www.data.go.kr/,"번호,공동시설명,검사여부,미검사사유,검사일자,검사결과,...",column_name,draft,"값 예: '수량부족', '12.23일 지정해제'"
 measurement,WQ-008,,PH_ITEM_VL,GG_WATER_API,2026-08-05,https://data.gg.go.kr/portal/data/openapi/selectOpenApiMeta.do?infId=A8F378W1HRG03Q4GJHT423038583&infSeq=2,<PH_ITEM_VL>7.4102</PH_ITEM_VL><TUBDTY_ITEM_VL>0.0507</TUBDTY_ITEM_VL>,column_name,verified,'<항목약어>_ITEM_VL' 패턴 — 접미사 규칙으로 후보 추출 가능
 measurement,WQ-069,,TUBDTY_ITEM_VL,GG_WATER_API,2026-08-05,https://data.gg.go.kr/portal/data/openapi/selectOpenApiMeta.do?infId=A8F378W1HRG03Q4GJHT423038583&infSeq=2,<PH_ITEM_VL>7.4102</PH_ITEM_VL><TUBDTY_ITEM_VL>0.0507</TUBDTY_ITEM_VL>,column_name,verified,'<항목약어>_ITEM_VL' 패턴 — 접미사 규칙으로 후보 추출 가능
 measurement,WQ-070,,RSDLCR_ITEM_VL,GG_WATER_API,2026-08-05,https://data.gg.go.kr/portal/data/openapi/selectOpenApiMeta.do?infId=A8F378W1HRG03Q4GJHT423038583&infSeq=2,<PH_ITEM_VL>7.4102</PH_ITEM_VL><TUBDTY_ITEM_VL>0.0507</TUBDTY_ITEM_VL>,column_name,verified,'<항목약어>_ITEM_VL' 패턴 — 접미사 규칙으로 후보 추출 가능
@@ -172,6 +177,8 @@ metadata,,MD-015,REFINE_LOTNO_ADDR,GG_SPRING_API,2026-08-05,https://data.gg.go.k
 metadata,,MD-013,REFINE_WGS84_LAT,GG_SPRING_API,2026-08-05,https://data.gg.go.kr/portal/data/service/selectServicePage.do?infId=3PS7152M60Q0ZAG0427012039966&infSeq=3,상세페이지 출력필드 명세 19개,column_name,verified,
 metadata,,MD-014,REFINE_WGS84_LOGT,GG_SPRING_API,2026-08-05,https://data.gg.go.kr/portal/data/service/selectServicePage.do?infId=3PS7152M60Q0ZAG0427012039966&infSeq=3,상세페이지 출력필드 명세 19개,column_name,verified,
 metadata,,MD-019,SIGUN_CD,GG_SPRING_API,2026-08-05,https://data.gg.go.kr/portal/data/service/selectServicePage.do?infId=3PS7152M60Q0ZAG0427012039966&infSeq=3,상세페이지 출력필드 명세 19개,column_name,verified,
+metadata,,MD-004,측정시설명,MANUAL,2026-08-05,,,deprecated_std_name,verified,2026-08-08 표준용어 '시설명' 채택으로 대체된 구 표준명
+metadata,,MD-005,측정시설번호,MANUAL,2026-08-05,,,deprecated_std_name,verified,2026-08-08 표준용어 '시설번호' 채택으로 대체된 구 표준명
 measurement,WQ-001,,생물화학적 산소요구량,LAW_ANNEX13,2026-08-05,https://www.law.go.kr/법령/물환경보전법시행규칙,가목 2) 표: '생물화학적산소요구량(㎎/L)'과 '생물화학적 산소요구량(㎎/L)'이 같은 표에 병존,legal_variant,verified,법령 원문조차 한 표 안에서 띄어쓰기가 흔들린다
 measurement,WQ-029,,폴리클로리네이티드바이페닐(PCB)함유량,LAW_ANNEX13,2026-08-05,https://www.law.go.kr/법령/물환경보전법시행규칙,나목 8) 2019.1.1~2020.12.31 기준표,legal_variant,verified,현행(2021~) 표기는 'PCB함유량'으로 축약됨
 measurement,WQ-027,,플루오르(불소)함유량,LAW_ANNEX13,2026-08-05,https://www.law.go.kr/법령/물환경보전법시행규칙,,legal_variant,draft,PDF 텍스트 추출 결과는 '플로오르(불소)'. 정오표 가능성 있어 국가법령정보센터 원문 재확인 필요
@@ -261,7 +268,7 @@ metadata,,MD-019,STDG_SGG_CD,MOIS_STD_TERM,2026-08-05,https://www.data.go.kr/dat
 metadata,,MD-019,STDG_CD,MOIS_STD_TERM,2026-08-05,https://www.data.go.kr/data/15156379/fileData.do,공통표준용어 영문약어명 = STDG_CD,abbreviation,verified,
 metadata,,MD-022,INST_NM,MOIS_STD_TERM,2026-08-05,https://www.data.go.kr/data/15156379/fileData.do,공통표준용어 영문약어명 = INST_NM,abbreviation,verified,
 metadata,,MD-029,DATA_CRTR_YMD,MOIS_STD_TERM,2026-08-05,https://www.data.go.kr/data/15156379/fileData.do,공통표준용어 영문약어명 = DATA_CRTR_YMD,abbreviation,verified,
-metadata,,MD-030,MSPT_NO,MOIS_STD_TERM,2026-08-05,https://www.data.go.kr/data/15156379/fileData.do,공통표준용어 영문약어명 = MSPT_NO,abbreviation,verified,
+metadata,,MD-030,MSPT_NO,MOIS_STD_TERM,2026-08-05,https://www.data.go.kr/data/15156379/fileData.do,공통표준용어 '측정지점번호'의 영문약어명,abbreviation,draft,차용 후보의 약어일 뿐 우리 용어에 배정된 약어가 아니다. 개념 동일성 확인 전까지 미검수
 measurement,WQ-001,,BOD5,DRAFT_AI,2026-08-05,,,colloquial,draft,초안 xlsx의 AI 생성 표기 — 실데이터/법령에서 확인되기 전까지 미검수
 measurement,WQ-001,,생물학적 산소요구량,DRAFT_AI,2026-08-05,,,colloquial,draft,초안 xlsx의 AI 생성 표기 — 실데이터/법령에서 확인되기 전까지 미검수
 measurement,WQ-001,,비오디,DRAFT_AI,2026-08-05,,,colloquial,draft,초안 xlsx의 AI 생성 표기 — 실데이터/법령에서 확인되기 전까지 미검수
@@ -328,8 +335,6 @@ measurement,WQ-006,,인(총),DRAFT_AI,2026-08-05,,,colloquial,rejected,"사전�
 measurement,WQ-012,,유분(광유),DRAFT_AI,2026-08-05,,,colloquial,rejected,사전에서 폐기: 괄호를 떼면 '유분' — WQ-013 '유분(동식물유지)'과 충돌
 measurement,WQ-013,,유분(동식물유지),DRAFT_AI,2026-08-05,,,colloquial,rejected,사전에서 폐기: 괄호를 떼면 '유분' — WQ-012 '유분(광유)'과 충돌
 measurement,WQ-018,,Cr(VI),DRAFT_AI,2026-08-05,,,colloquial,rejected,사전에서 폐기: 괄호를 떼면 'Cr' — 총크롬(WQ-017)의 약어와 충돌. 'Cr-VI'로 대체
-metadata,,MD-004,공동시설명,DATAGO_BUSAN,2026-08-06,https://www.data.go.kr/,"번호,공동시설명,검사여부,미검사사유,검사일자,검사결과,…",column_name,draft,부산 약수터 수질검사 실컬럼. 약수터는 정수장이 아니라 공동이용시설이라 시설명 계열로 본다
-metadata,,MD-006,검사일자,DATAGO_BUSAN,2026-08-06,https://www.data.go.kr/,검사일자 값 예: 2025-10-21,column_name,draft,측정일자와 같은 뜻. 값이 YYYY-MM-DD 날짜임을 실데이터로 확인
-metadata,,MD-025,검사결과,DATAGO_BUSAN,2026-08-06,https://www.data.go.kr/,"검사결과 고유값 2개: '적합','부적합'",column_name,draft,값이 적합/부적합 2종뿐이므로 측정치가 아니라 적합여부 판정이다
-metadata,,MD-031,검사여부,DATAGO_BUSAN,2026-08-06,https://www.data.go.kr/,"검사여부 고유값 2개: '검사','미검사'",column_name,draft,
-metadata,,MD-032,미검사사유,DATAGO_BUSAN,2026-08-06,https://www.data.go.kr/,"미검사사유 값 예: '수량부족','12.23일 지정해제'",column_name,draft,
+metadata,,MD-001,지점명,HUMAN_REVIEW,2026-08-08,,출처파일: 충남_보건환경연구원_물환경측정망_하천.csv,column_name,verified,리뷰 대기열 승인 (판정자: 박서연)
+metadata,,MD-012,"채수시각
+(WMCTM)",HUMAN_REVIEW,2026-08-08,,출처파일: 충남_보건환경연구원_물환경측정망_하천.csv,column_name,verified,리뷰 대기열 승인 (판정자: 박서연)

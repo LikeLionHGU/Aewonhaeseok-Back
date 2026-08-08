@@ -405,6 +405,45 @@ def detect_header_row(raw: pd.DataFrame, scan_rows: int = config.HEADER_SCAN_ROW
     return best_row
 
 
+def _cell(v: object) -> str:
+    return "" if pd.isna(v) else str(v).strip()
+
+
+def _is_group_header_row(values: list[str]) -> bool:
+    """병합 헤더의 상위 행인가, 아니면 제목 한 줄인가.
+
+    제목 행은 보통 셀 하나만 차 있다. 그룹 헤더 행은 여러 칸에 라벨이 흩어져 있다.
+    이 구분이 없으면 제목 조각이 헤더로 딸려 들어온다.
+    """
+    return sum(1 for v in values if v) >= config.MERGED_HEADER_MIN_LABELS
+
+
+def fill_merged_header(raw: pd.DataFrame, header_row: int) -> list[str]:
+    """헤더 행의 빈 칸을 위쪽 그룹 헤더에서 끌어온다 (세로 병합 셀 복원).
+
+    엑셀에서 세로로 병합된 셀은 아래 칸이 비어 있다. 헤더 행만 읽으면 그 컬럼이
+    통째로 사라진다 — 충남 물환경측정망 파일에서 측정소명·측정소코드가 이렇게 소실됐다.
+
+        1행: 지점명 | 지점번호(PT_NO) | 측정년월/회차 |          |
+        2행:        |                 | 년(WMYR)      | 월(WMOD) |   ← 헤더로 선택됨
+
+    빈 칸만 채운다. 이미 값이 있으면 건드리지 않는다 —
+    '측정값' 그룹 아래의 '수온(0.0)'을 '측정값수온(0.0)'으로 만들면 안 되기 때문이다.
+    위로 올라가다 제목 행(라벨 1개 이하)을 만나면 멈춘다.
+    """
+    header = [_cell(v) for v in raw.iloc[header_row].tolist()]
+    for i in range(header_row - 1, -1, -1):
+        above = [_cell(v) for v in raw.iloc[i].tolist()]
+        if not _is_group_header_row(above):
+            break
+        for j, cur in enumerate(header):
+            if not cur and j < len(above) and above[j]:
+                header[j] = above[j]
+        if all(header):
+            break
+    return header
+
+
 def read_data_file(path: Path | str) -> tuple[pd.DataFrame, int]:
     """xlsx/csv를 헤더 자동 탐지로 읽는다. 반환: (데이터프레임, 헤더 행 인덱스)."""
     path = Path(path)
@@ -423,10 +462,8 @@ def read_data_file(path: Path | str) -> tuple[pd.DataFrame, int]:
             raise ValueError(f"{path}: CSV 인코딩을 인식하지 못했습니다 ({last_err})")
 
     header_row = detect_header_row(raw)
-    header = [
-        (str(v).strip() if not pd.isna(v) and str(v).strip() else f"UNNAMED_{j}")
-        for j, v in enumerate(raw.iloc[header_row].tolist())
-    ]
+    filled = fill_merged_header(raw, header_row)
+    header = [v if v else f"UNNAMED_{j}" for j, v in enumerate(filled)]
     df = raw.iloc[header_row + 1 :].reset_index(drop=True)
     df.columns = header
     return df, header_row

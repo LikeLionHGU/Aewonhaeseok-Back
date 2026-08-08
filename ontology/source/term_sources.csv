@@ -18,3 +18,4 @@ DATAGO_DANGJIN,충청남도 당진시 상수도 수질검사,충청남도 당진
 DATAGO_BUSAN,부산광역시 약수터 수질검사,부산광역시,file,https://www.data.go.kr/,CSV 헤더 실측,CP949,observed
 DRAFT_AI,팀 내부 초안 (수질_측정항목_표준사전_초안.xlsx),팀 자체 작성,manual,,AI가 생성한 미검증 표기. 법령·실데이터로 확인되기 전에는 근거로 인용 금지,UTF-8,inferred
 MANUAL,사람이 직접 입력,팀 자체 작성,manual,,운영 중 수기 추가분,UTF-8,inferred
+HUMAN_REVIEW,매핑 파이프라인 리뷰 대기열 승인분,팀 자체 검수,manual,,run.py가 만든 review_queue.csv를 사람이 판정하고 apply_review.py로 반영한 것. 원본 데이터 파일명은 각 동의어의 evidence_snippet에 남는다,UTF-8,observed

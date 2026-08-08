@@ -182,6 +182,46 @@ def test_header_detected_on_first_row(project):
     assert header_row == 0
 
 
+# ── 병합 헤더 복원 ───────────────────────────────────────────────────────
+#
+# 충남 물환경측정망 파일에서 발견: 지점명·지점번호가 1행에 세로 병합돼 있어
+# 2행을 헤더로 고르면 그 두 컬럼이 통째로 UNNAMED로 소실됐다.
+
+def _write_merged_header_file(path: Path) -> None:
+    """1행 그룹 헤더 + 2행 세부 헤더. 앞 두 칸은 세로 병합(2행이 빈칸).
+
+    실제 파일이 그렇듯 그룹 라벨(3개)이 세부 라벨(4개)보다 적어야
+    detect_header_row가 2행을 헤더로 고른다.
+    """
+    pd.DataFrame([
+        ["측정소명", "측정소코드", "측정값", None,   None,   None],
+        [None,       None,         "총질소", "총인", "수온", "pH"],
+        ["가평-1",   "S001",       2.1,      0.04,   18.2,   7.2],
+    ]).to_excel(path, index=False, header=False)
+
+
+def test_merged_header_recovers_vertically_merged_cells(tmp_path: Path, lexicon):
+    p = tmp_path / "merged.xlsx"
+    _write_merged_header_file(p)
+    df, header_row = read_data_file(p)
+
+    assert header_row == 1
+    # 빈칸은 위 행에서 끌어오고, 값이 있는 칸은 그대로 둔다
+    assert list(df.columns) == ["측정소명", "측정소코드", "총질소", "총인", "수온", "pH"]
+    assert not any(c.startswith(config.UNMAPPED_PREFIX) or c.startswith("UNNAMED")
+                   for c in df.columns)
+    # 복원된 컬럼이 실제로 매핑까지 되어야 의미가 있다
+    assert map_column(df.columns[0], lexicon).code == "MD-PTNM"
+
+
+def test_merged_header_does_not_absorb_title_row(project):
+    """제목 한 줄(셀 1개)은 그룹 헤더가 아니므로 끌어오면 안 된다."""
+    df, header_row = read_data_file(project / "data" / "samples" / "test3_header_row2.xlsx")
+    assert header_row == 1
+    assert list(df.columns) == ["측정소코드", "T-N", "총인", "수온(℃)"]
+    assert not any("결과보고" in c for c in df.columns)
+
+
 # ── 3단계: LLM fallback 훅 ──────────────────────────────────────────────
 
 def test_llm_fallback_is_stub(lexicon):
