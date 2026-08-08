@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from datetime import date
 from pathlib import Path
 
 import pandas as pd
@@ -220,6 +221,78 @@ def test_merged_header_does_not_absorb_title_row(project):
     assert header_row == 1
     assert list(df.columns) == ["측정소코드", "T-N", "총인", "수온(℃)"]
     assert not any("결과보고" in c for c in df.columns)
+
+
+# ── 사전 버전 ────────────────────────────────────────────────────────────
+
+def test_version_hash_tracks_content_not_mtime(tmp_path: Path):
+    """같은 내용을 다시 써도 해시가 같아야 불필요한 리로드를 안 한다."""
+    from pipeline.version import compute_content_hash
+
+    a, b = tmp_path / "m.csv", tmp_path / "d.csv"
+    a.write_text("code,name_ko\nWQ-001,BOD\n", encoding="utf-8")
+    b.write_text("code,name_ko\nMD-001,측정소명\n", encoding="utf-8")
+    first = compute_content_hash(a, b)
+
+    a.write_text("code,name_ko\nWQ-001,BOD\n", encoding="utf-8")   # 내용 동일
+    assert compute_content_hash(a, b) == first
+
+    a.write_text("code,name_ko\nWQ-001,BOD5\n", encoding="utf-8")  # 내용 변경
+    assert compute_content_hash(a, b) != first
+
+
+def test_version_roundtrip_and_staleness(tmp_path: Path):
+    from pipeline.version import (
+        VERSION_FILENAME,
+        VersionFileMissing,
+        build_version,
+        is_stale,
+        load_dictionary_version,
+        write_version,
+    )
+
+    onto = tmp_path / "ontology"
+    onto.mkdir()
+    m, d = onto / "measurement_terms.csv", onto / "metadata_terms.csv"
+    m.write_text("code\nWQ-001\n", encoding="utf-8")
+    d.write_text("code\nMD-001\n", encoding="utf-8")
+
+    with pytest.raises(VersionFileMissing):
+        load_dictionary_version(onto)
+
+    v = build_version(m, d, measurement_terms=1, metadata_terms=1,
+                      synonyms=0, verified_terms=1, today=date(2026, 8, 8))
+    write_version(onto / VERSION_FILENAME, v)
+
+    loaded = load_dictionary_version(onto)
+    assert loaded.version == "dict-2026-08-08"      # git 태그와 같은 규칙
+    assert loaded.content_hash == v.content_hash
+    assert loaded.as_dict()["counts"]["measurement_terms"] == 1
+    assert not is_stale(loaded, onto)
+
+    # 사전이 바뀌고 다시 내보내면 낡은 것으로 감지돼야 한다
+    m.write_text("code\nWQ-001\nWQ-002\n", encoding="utf-8")
+    write_version(onto / VERSION_FILENAME,
+                  build_version(m, d, measurement_terms=2, metadata_terms=1,
+                                synonyms=0, verified_terms=1, today=date(2026, 8, 8)))
+    assert is_stale(loaded, onto)
+
+
+def test_shipped_version_matches_current_dictionary():
+    """저장소에 커밋된 VERSION.json이 지금 사전과 맞는가.
+
+    사전을 고치고 export를 빠뜨리면 백엔드가 낡은 버전을 표시하게 된다.
+    """
+    from pipeline.version import compute_content_hash, load_dictionary_version
+
+    onto = Path(__file__).resolve().parents[1] / "ontology"
+    v = load_dictionary_version(onto)
+    actual = compute_content_hash(onto / "measurement_terms.csv",
+                                  onto / "metadata_terms.csv")
+    assert v.content_hash == actual, (
+        "VERSION.json이 현재 사전과 다릅니다. "
+        "python3 ontology/export_ontology.py 를 다시 돌리세요."
+    )
 
 
 # ── 3단계: LLM fallback 훅 ──────────────────────────────────────────────

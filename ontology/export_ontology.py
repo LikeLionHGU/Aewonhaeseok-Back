@@ -234,6 +234,26 @@ def main() -> int:
         print(f"\n[실패] 사전 표기 충돌\n{e}")
         return 1
     print(f"\n엔진 로딩 확인: 색인 {len(lex.exact_index)}개 표기")
+
+    # 사전 버전 스탬프. 손으로 쓰지 않고 여기서 함께 만든다 —
+    # 사람이 올리는 번호는 반드시 잊어버린다.
+    from pipeline.version import VERSION_FILENAME, build_version, write_version
+
+    n_verified = sum(1 for r in m_rows + d_rows if str(r.get("verified", "")).strip() == "Y")
+    v = build_version(
+        HERE / "measurement_terms.csv",
+        HERE / "metadata_terms.csv",
+        measurement_terms=len(m_rows),
+        metadata_terms=len(d_rows),
+        synonyms=sum(len(r["synonyms"].split("|")) if r["synonyms"] else 0
+                     for r in m_rows + d_rows),
+        verified_terms=n_verified,
+        excluded_inferred=args.exclude_inferred,
+        note="미검증(AI 추정) 동의어를 제외한 사전" if args.exclude_inferred else "",
+    )
+    write_version(HERE / VERSION_FILENAME, v)
+    print(f"사전 버전: {v.version}  (내용 해시 {v.content_hash})")
+    print(f"  → {HERE / VERSION_FILENAME}")
     return 0
 
 

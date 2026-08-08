@@ -1,0 +1,12 @@
+{
+  "version": "dict-2026-08-08",
+  "content_hash": "1af5033c93a71ac5",
+  "generated_at": "2026-08-08",
+  "counts": {
+    "measurement_terms": 75,
+    "metadata_terms": 32,
+    "synonyms": 206,
+    "verified_terms": 93
+  },
+  "excluded_inferred": false
+}
