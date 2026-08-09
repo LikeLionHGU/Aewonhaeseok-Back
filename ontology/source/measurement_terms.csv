@@ -72,6 +72,4 @@ WQ-070,잔류염소(유리잔류염소를 말한다),Residual Chlorine (Free),-,
 WQ-071,일반세균,Heterotrophic Plate Count,-,CFU/mL,미생물,먹는물 수질기준 및 검사 등에 관한 규칙 별표 1(제2조 관련) 제1호 가목,제34조,,개정 2025. 3. 20.,non_statutory,False,,,verified,,,기준 100CFU/mL. 샘물·염지하수는 저온일반세균/중온일반세균으로 나뉜다
 WQ-072,과망간산칼륨 소비량,Potassium Permanganate Consumption,-,㎎/L,유기물,먹는물 수질기준 및 검사 등에 관한 규칙 별표 1(제2조 관련) 제5호 나목,제34조,,개정 2025. 3. 20.,non_statutory,False,,,verified,,,기준 10㎎/L. 법령 표기에 공백이 있다('과망간산칼륨 소비량')
 WQ-073,투명도,Transparency,-,m,일반,수질오염공정시험기준,제34조,,개정 2025. 3. 20.,non_statutory,False,,,draft,,,국립환경과학원 API 명세는 단위를 ㎎/L로 적어 두었으나 실제로는 길이 단위 — 명세 오류로 보임
-WQ-074,수위,Water Level,-,m,수문,,제34조,,개정 2025. 3. 20.,non_statutory,False,,,draft,,,수질 항목이 아니라 수문 관측값
-WQ-075,유량,Flow Rate,-,㎥/s,수문,,제34조,,개정 2025. 3. 20.,non_statutory,False,,,draft,,,
 WQ-076,헥사클로로벤젠,Hexachlorobenzene,HCB,㎎/L,유해물질,환경정책기본법 시행령 별표 1 환경기준(제2조 관련) — 하천 사람의 건강보호 기준,제34조,,개정 2025. 3. 20.,non_statutory,False,,,verified,,,별표 13 배출허용기준에는 없고 환경기준(사람의 건강보호)에 있는 항목. 국립환경과학원 API의 itemHcb가 여기에 대응한다
