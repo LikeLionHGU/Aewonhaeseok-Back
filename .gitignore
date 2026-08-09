@@ -4,3 +4,4 @@ __pycache__/
 output/
 *.pyc
 output_holdout/
+legal/

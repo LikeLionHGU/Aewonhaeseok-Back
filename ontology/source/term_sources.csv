@@ -16,6 +16,9 @@ DATAGO_GIMHAE,경상남도 김해시 하천수질 현황,경상남도 김해시,
 DATAGO_INCHEON,인천광역시 수질오염,인천광역시,file,https://www.data.go.kr/data/15066383/fileData.do,CSV 헤더 실측. 하천명이 컬럼명에 병합된 wide 피벗 구조,CP949,observed
 DATAGO_DANGJIN,충청남도 당진시 상수도 수질검사,충청남도 당진시,file,https://www.data.go.kr/,CSV 헤더 실측(60항목). UTF-8 BOM,UTF-8 BOM,observed
 DATAGO_BUSAN,부산광역시 약수터 수질검사,부산광역시,file,https://www.data.go.kr/,CSV 헤더 실측,CP949,observed
+LAW_FORM18,물환경보전법 시행규칙 별지 제18호서식 폐수배출시설 및 수질오염방지시설 운영일지,환경부,legal,https://www.law.go.kr/LSW/lsBylInfoPLinkR.do?bylCls=BF&bylNo=0018,"개정 2024. 11. 7. PDF 2쪽 텍스트 추출본 전수 대조. 추출문은 표의 행·열 경계가 소실되고 자간 공백이 삽입된다('전 일  지 침', '약 품  소 모 량', '유 량 계', 'n- H ex'). 칸 위치·띄어쓰기 확정은 원 서식 이미지 재확인 필요",UTF-8,legal
+LAW_FORM20,물환경보전법 시행규칙 별지 제20호서식 폐수배출시설 운영일지,환경부,legal,https://www.law.go.kr/LSW/lsBylInfoPLinkR.do?bylCls=BF&bylNo=0020,개정 2018. 1. 17. 시행령 제33조제2호·제3호에 따라 폐수를 처리하는 사업자가 적는다. 총 10칸. 수량 단위가 제18호서식의 ㎥가 아니라 L,UTF-8,legal
+TMS_NOTICE,수질원격감시체계 관제센터 운영 등에 관한 규정(환경부고시),환경부,legal,https://www.law.go.kr/LSW/admRulLsInfoP.do?admRulSeq=2100000265818,국가법령정보센터 본문 중 핵심 조문 발췌본으로 대조 — 전문이 아니다. 별표1(비정상자동측정자료 선별기준)·별표2(대체자료 생성방법)·별표3(24시간 평균치 생성방법) 미포함. 조문 단위 표기는 관보 원문 재확인 필요,UTF-8,legal
 DRAFT_AI,팀 내부 초안 (수질_측정항목_표준사전_초안.xlsx),팀 자체 작성,manual,,AI가 생성한 미검증 표기. 법령·실데이터로 확인되기 전에는 근거로 인용 금지,UTF-8,inferred
 MANUAL,사람이 직접 입력,팀 자체 작성,manual,,운영 중 수기 추가분,UTF-8,inferred
 HUMAN_REVIEW,매핑 파이프라인 리뷰 대기열 승인분,팀 자체 검수,manual,,run.py가 만든 review_queue.csv를 사람이 판정하고 apply_review.py로 반영한 것. 원본 데이터 파일명은 각 동의어의 evidence_snippet에 남는다,UTF-8,observed

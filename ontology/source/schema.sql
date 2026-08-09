@@ -220,7 +220,8 @@ CREATE TABLE term_synonyms (
                           'legal_variant', -- 같은 법령 안의 다른 표기
                           'abbreviation',  -- 약어
                           'colloquial',    -- 현장 구어 (비오디 등)
-                          'typo'           -- 오타. 실제로 유통되므로 사전에 남긴다.
+                          'typo',          -- 오타. 실제로 유통되므로 사전에 남긴다.
+                          'deprecated_std_name'  -- 표제어가 교체되어 강등된 구 표준명
                         )),
   review_status       text NOT NULL DEFAULT 'draft'
                         CHECK (review_status IN ('draft','verified','rejected')),

@@ -60,8 +60,6 @@ metadata,,MD-009,wmod,NIER_WQ_API,2026-08-05,https://www.data.go.kr/data/1508107
 metadata,,MD-010,wmwk,NIER_WQ_API,2026-08-05,https://www.data.go.kr/data/15081073/openapi.do,출력결과 명세표 항목명(영문) 열,column_name,verified,
 metadata,,MD-006,wmcymd,NIER_WQ_API,2026-08-05,https://www.data.go.kr/data/15081073/openapi.do,출력결과 명세표 항목명(영문) 열,column_name,verified,
 metadata,,MD-024,wmdep,NIER_WQ_API,2026-08-05,https://www.data.go.kr/data/15081073/openapi.do,출력결과 명세표 항목명(영문) 열,column_name,verified,
-metadata,,MD-027,rowno,NIER_WQ_API,2026-08-05,https://www.data.go.kr/data/15081073/openapi.do,출력결과 명세표 항목명(영문) 열,column_name,verified,
-metadata,,MD-028,totalCount,NIER_WQ_API,2026-08-05,https://www.data.go.kr/data/15081073/openapi.do,출력결과 명세표 항목명(영문) 열,column_name,verified,
 metadata,,MD-013,latDgr,NIER_WQ_API,2026-08-05,https://www.data.go.kr/data/15081073/openapi.do,,column_name,verified,도/분/초 분리 필드 — 십진도 환산 필요
 metadata,,MD-013,latMin,NIER_WQ_API,2026-08-05,https://www.data.go.kr/data/15081073/openapi.do,,column_name,verified,도/분/초 분리 필드 — 십진도 환산 필요
 metadata,,MD-013,latSec,NIER_WQ_API,2026-08-05,https://www.data.go.kr/data/15081073/openapi.do,,column_name,verified,도/분/초 분리 필드 — 십진도 환산 필요
