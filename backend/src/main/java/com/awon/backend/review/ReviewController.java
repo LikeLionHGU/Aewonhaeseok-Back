@@ -4,6 +4,7 @@ import com.awon.backend.common.ApiException;
 import com.awon.backend.common.ErrorCode;
 import com.awon.backend.common.PageResponse;
 import com.awon.backend.dictionary.TermNameCache;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
@@ -58,18 +59,29 @@ public class ReviewController {
     /**
      * 판정 저장.
      *
-     * <p>판정자와 판정 시각은 서버가 기록한다. 프론트가 보내지 않는다.
+     * <p>판정 시각은 서버가 기록한다. 판정자는 요청에서 받는다 —
+     * 로그인을 두지 않기로 했으므로(2026-08-12) 화면에서 이름을 입력받는다.
+     *
+     * <p>판정자를 남기는 이유: 사전 담당자가 나중에 "이 동의어를 누가 왜 넣었나"를
+     * 확인해야 한다. 매핑 엔진의 apply_review()도 이 값을 사전 이력에 기록한다.
+     * 비워 두면 사전의 근거가 그만큼 약해진다.
      */
     @PostMapping("/{id}/verdict")
     public ReviewResponse decide(@PathVariable Long id, @Valid @RequestBody VerdictRequest request) {
-        // TODO 인증 붙기 전까지는 임시 판정자. B1 결정(판정자 신원)이 나오면 교체한다.
-        ReviewItem decided = service.decide(id, request.verdict(), request.note(), "미상");
+        ReviewItem decided = service.decide(
+                id, request.verdict(), request.note(), request.reviewerOrUnknown());
         return ReviewResponse.of(decided, terms.nameOf(decided.getCandidateCode()));
     }
 
     public record VerdictRequest(
             @NotBlank(message = "판정 값이 비어 있습니다.") String verdict,
-            String note) {
+            String note,
+            @JsonProperty("reviewed_by") String reviewedBy) {
+
+        /** 이름을 안 보내도 판정 자체는 막지 않는다. 다만 이력이 약해진다. */
+        String reviewerOrUnknown() {
+            return reviewedBy == null || reviewedBy.isBlank() ? "미상" : reviewedBy.trim();
+        }
     }
 
     public record ReviewResponse(

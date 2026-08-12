@@ -457,7 +457,6 @@
         <a href="#b6"><span class="k">B6</span> 기준치</a>
         <a href="#b7"><span class="k">B7</span> 분석</a>
         <a href="#b8"><span class="k">B8</span> 사전 운영</a>
-        <a href="#b1"><span class="k">B1</span> 계정</a>
         <a href="#order"><span class="k">§7</span> 구현 순서</a>
         <a href="#stack"><span class="k">§8</span> 기술 전제</a>
       </nav>
@@ -565,6 +564,14 @@
             <tr><td class="num">503</td><td class="mono">MAPPER_UNAVAILABLE</td><td><strong>매핑 서비스가 떠 있지 않음.</strong> 두 프로세스를 모두 띄워야 한다</td></tr>
           </tbody>
         </table>
+      </div>
+
+      <h3>인증</h3>
+
+      <div class="note fact">
+        <span class="label">로그인을 두지 않는다</span>
+        <p>2026-08-12 결정. 인증·회원가입 화면이 없고, 모든 엔드포인트가 인증 없이 열려 있습니다. 소속 기관별 데이터 분리도 하지 않습니다.</p>
+        <p>대신 <strong>용어 판정에는 판정자 이름을 함께 보내주세요.</strong> <code>POST /reviews/{id}/verdict</code>의 <code>reviewed_by</code> 필드입니다. 사전 담당자가 나중에 "이 동의어를 누가 넣었나"를 확인해야 하고, 매핑 엔진도 이 값을 사전 이력에 기록합니다. 비워 두면 <code>미상</code>으로 저장되며 판정 자체는 됩니다.</p>
       </div>
 
       <h3>페이징</h3>
@@ -857,7 +864,11 @@
         </div>
 
         <div class="code-wrap"><pre><span class="c">// 요청</span>
-{ <span class="k">"verdict"</span>: <span class="s">"MD-012"</span>, <span class="k">"note"</span>: <span class="s">"측정일자가 아니라 측정시각임"</span> }</pre></div>
+{
+  <span class="k">"verdict"</span>: <span class="s">"MD-012"</span>,
+  <span class="k">"note"</span>: <span class="s">"측정일자가 아니라 측정시각임"</span>,
+  <span class="k">"reviewed_by"</span>: <span class="s">"박서연"</span>
+}</pre></div>
 
         <div class="table-wrap">
           <table>
@@ -870,9 +881,9 @@
           </table>
         </div>
 
-        <p><strong>판정자와 판정 시각은 서버가 자동으로 기록합니다.</strong> 프론트가 보내지 않습니다.</p>
+        <p><strong>판정 시각은 서버가 기록합니다.</strong> 판정자는 <code>reviewed_by</code>로 보내주세요 &mdash; 로그인이 없으므로 화면에서 이름을 입력받아야 합니다.</p>
 
-        <p>다만 인증(B1)이 붙기 전까지 <code>reviewed_by</code>는 <code>"미상"</code>으로 들어갑니다. 화면에서는 그대로 표시하면 됩니다.</p>
+        <p>보내지 않으면 <code>"미상"</code>으로 저장됩니다. 판정 자체는 되지만 사전 이력이 그만큼 약해집니다.</p>
 
         <div class="code-wrap"><pre><span class="c">// 200 OK</span>
 {
@@ -1140,21 +1151,7 @@
       </div>
     </section>
 
-        <!-- ═══ B1 ═══ -->
-    <section id="b1">
-      <h2><span class="tag">B1</span> 계정 <span class="rest">합의 필요</span></h2>
-      <p class="lede"><code>POST /auth/signup</code> · <code>POST /auth/login</code>. 이메일 · 비밀번호 · 소속 기관. 아래 세 가지가 정해지지 않아 아직 명세를 쓸 수 없습니다.</p>
-
-      <ol class="steps">
-        <li><b>인증 방식</b><span>JWT 액세스 토큰인지 세션 쿠키인지. 프론트엔드 작업자와 합의가 필요합니다.</span></li>
-        <li><b>소속 기관이 테넌트인가</b><span>같은 기관 사용자끼리 업로드한 파일과 분석 결과를 공유하는지, 개인별로 격리하는지. 이 답에 따라 <strong>위의 모든 목록 API에 기관 필터가 들어가야 합니다.</strong> 지금 명세는 필터가 없는 상태로 쓰여 있습니다.</span></li>
-        <li><b>판정자 신원</b><span>판정 저장이 판정자를 자동 기록하는데, 로그인 사용자를 쓰는 것이 맞는지. 사전의 신뢰도와 직결되는 기록이라 확인이 필요합니다.</span></li>
-      </ol>
-
-      <p>데모까지 시간이 빠듯하면 인증은 최소한으로 만들고 뒤로 미뤄도 됩니다. <strong>위 흐름 중 인증에 막히는 것은 없습니다.</strong></p>
-    </section>
-
-    <!-- ═══ 순서 ═══ -->
+            <!-- ═══ 순서 ═══ -->
     <section id="order">
       <h2><span class="tag">§7</span> 구현 순서</h2>
       <p class="lede">기능명세서의 개발 순서에는 B2 · B4 · B1이 빠져 있어 아래로 조정했습니다.</p>
@@ -1166,7 +1163,6 @@
         <li><b>B5 데이터 적재</b><span>스키마 설계부터 시작합니다.</span></li>
         <li><b>B6 기준치</b><span>법령에서 숫자 추출.</span></li>
         <li><b>B7 분석</b><span>조건 선택 방식을 먼저, 자연어 파싱은 마지막에.</span></li>
-        <li><b>B1 계정</b><span>위 결정 사항이 정해지는 대로.</span></li>
       </ol>
 
       <p>1번부터 3번까지가 끝나면 "제각각인 데이터를 넣으면 표준화되고, 애매한 것은 사람이 판정하며, 그 판정으로 사전이 성장한다"는 이야기가 완성됩니다. 심사에서 가장 강한 카드를 일찍 손에 쥐는 순서입니다.</p>
