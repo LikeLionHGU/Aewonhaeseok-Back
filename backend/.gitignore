@@ -1,0 +1,47 @@
+HELP.md
+.gradle
+build/
+
+### 우리 서비스 ###
+# 업로드된 원본 파일. 고객사 수질 데이터가 들어오는 곳이라 절대 커밋하지 않는다.
+storage/
+# 접속 정보. 비밀번호는 소스에도 저장소에도 두지 않는다.
+.env
+.env.local
+application-local.yml
+application-local.properties
+
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/

@@ -1,0 +1,73 @@
+spring:
+  application:
+    name: awon-backend
+
+  datasource:
+    # 접속 정보는 환경변수로. 기본값은 로컬 개발용이다.
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:awon}?characterEncoding=UTF-8&serverTimezone=Asia/Seoul&rewriteBatchedStatements=true
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      # 스키마는 Flyway가 만든다. JPA가 손대면 두 곳이 서로 다른 스키마를 주장하게 된다.
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 100
+          # MySQL의 DATETIME에는 시간대가 없다. 이걸 지정하지 않으면 저장할 때
+          # UTC로 변환됐다가 읽을 때 Z로 돌아와, 방금 만든 응답(+09:00)과
+          # 다시 조회한 응답(Z)의 형식이 서로 달라진다.
+          time_zone: Asia/Seoul
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+  jackson:
+    # Python 매핑 서비스가 snake_case로 말한다. 중계 구간에서 키를 변환하지 않도록
+    # 스프링도 snake_case로 맞춘다. 프론트까지 표기가 하나로 통일된다.
+    property-naming-strategy: SNAKE_CASE
+    default-property-inclusion: non_null
+    # 모든 시각을 KST 오프셋으로 통일해 내보낸다.
+    # 이게 없으면 방금 만든 응답은 +09:00, DB에서 다시 읽은 응답은 Z로 나와
+    # 같은 시각인데 표기가 달라진다. 프론트가 두 형식을 다 처리해야 한다.
+    time-zone: Asia/Seoul
+    datatype:
+      datetime:
+        # 시각을 숫자(epoch)가 아니라 ISO 8601 문자열로 내보낸다.
+        # Boot 4는 Jackson 3을 쓰는데, 이 옵션이 serialization에서 여기로 옮겨왔다.
+        write-dates-as-timestamps: false
+        # 위 time-zone을 실제 출력에 적용시키는 스위치.
+        write-dates-with-context-time-zone: true
+
+  servlet:
+    multipart:
+      # 실측상 가장 큰 샘플이 9MB였다. 여유를 둔다.
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+server:
+  port: ${SERVER_PORT:8080}
+
+# ────────────────────────────────────────────────────────────
+# 우리 서비스 설정
+# ────────────────────────────────────────────────────────────
+awon:
+  storage:
+    # 업로드 원본 보관 위치. 원본은 절대 수정하지 않는다(감사 대응).
+    root: ${STORAGE_ROOT:./storage/uploads}
+
+  mapper:
+    # Python 매핑 서비스. 외부에 노출하지 않고 스프링만 호출한다.
+    base-url: ${MAPPER_BASE_URL:http://localhost:8000}
+    # 9MB/104만행 파일이 0.33초였다. 여유를 크게 둔 값이다.
+    timeout-seconds: ${MAPPER_TIMEOUT:30}
+
+logging:
+  level:
+    com.awon.backend: DEBUG

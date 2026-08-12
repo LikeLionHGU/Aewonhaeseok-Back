@@ -1,0 +1,11 @@
+# 매핑 서비스 의존성
+# 매핑 엔진 자체의 의존성(pandas, rapidfuzz, openpyxl)은 저장소 루트의
+# requirements.txt에 있다. 둘 다 설치해야 한다.
+
+fastapi>=0.115
+uvicorn[standard]>=0.32
+python-multipart>=0.0.9    # 파일 업로드(multipart) 파싱에 필요
+
+# tools/export_judgments.py 가 DB에서 판정을 뽑을 때 쓴다 (순수 파이썬 드라이버)
+pymysql>=1.1
+pytest>=8.0

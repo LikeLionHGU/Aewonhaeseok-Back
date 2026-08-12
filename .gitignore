@@ -5,3 +5,10 @@ output/
 *.pyc
 output_holdout/
 legal/
+
+# IDE 설정 — 사람마다 다르고 커밋되면 서로 덮어쓴다
+.idea/
+*.iml
+
+# 전달용으로 생성한 명세서 사본 (api-spec.html에서 만들어짐)
+backend/물어볼래_API명세서_*.html
