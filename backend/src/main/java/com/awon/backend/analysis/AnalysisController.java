@@ -1,7 +1,5 @@
 package com.awon.backend.analysis;
 
-import com.awon.backend.common.ApiException;
-import com.awon.backend.common.ErrorCode;
 import com.awon.backend.common.PageResponse;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,7 +68,10 @@ public class AnalysisController {
                           FROM measurements WHERE measured_on IS NOT NULL
                         """),
                 "buckets", List.of("month", "quarter", "year", "none"),
-                "metrics", List.of("avg", "max", "min", "count"));
+                "metrics", List.of("avg", "max", "min", "count"),
+                "scales", List.of(
+                        Map.of("value", "large", "label", "2,000㎥/일 이상"),
+                        Map.of("value", "small", "label", "2,000㎥/일 미만")));
     }
 
     /** 실행 이력. 홈 화면의 '최근 분석 기록'에 쓴다. */
@@ -78,19 +79,7 @@ public class AnalysisController {
     public PageResponse<Map<String, Object>> history(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size) {
-
-        int offset = Math.max(0, page - 1) * size;
-        List<Map<String, Object>> items = jdbc.queryForList("""
-                SELECT execution_id, conditions, dictionary_version, ruleset_version,
-                       standard_set, region_grade, row_count, exceeded_count,
-                       elapsed_ms, truncated, ran_at
-                  FROM analysis_runs
-                 ORDER BY ran_at DESC
-                 LIMIT ? OFFSET ?
-                """, size, offset);
-
-        Integer total = jdbc.queryForObject("SELECT COUNT(*) FROM analysis_runs", Integer.class);
-        return new PageResponse<>(items, Math.max(1, page), size, total == null ? 0 : total);
+        return service.history(page, size);
     }
 
     /**
@@ -102,17 +91,14 @@ public class AnalysisController {
      */
     @GetMapping("/analyses/{executionId}")
     public Map<String, Object> detail(@PathVariable String executionId) {
-        List<Map<String, Object>> found = jdbc.queryForList("""
-                SELECT execution_id, conditions, generated_sql,
-                       dictionary_version, ruleset_version, standard_set, region_grade,
-                       row_count, exceeded_count, elapsed_ms, truncated, ran_at
-                  FROM analysis_runs
-                 WHERE execution_id = ?
-                """, executionId);
+        return service.detail(executionId);
+    }
 
-        if (found.isEmpty()) {
-            throw new ApiException(ErrorCode.ANALYSIS_NOT_FOUND, Map.of("execution_id", executionId));
-        }
-        return found.get(0);
+    @GetMapping("/analyses/{executionId}/measurements")
+    public PageResponse<Map<String, Object>> measurements(
+            @PathVariable String executionId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "50") int size) {
+        return service.measurementRows(executionId, page, size);
     }
 }

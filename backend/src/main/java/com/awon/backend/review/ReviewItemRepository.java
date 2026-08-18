@@ -18,6 +18,8 @@ public interface ReviewItemRepository extends JpaRepository<ReviewItem, Long> {
 
     long countByFileIdAndVerdictIsNull(Long fileId);
 
+    List<ReviewItem> findByFileIdOrderByCreatedAtDesc(Long fileId);
+
     /**
      * 사전 담당자에게 아직 안 넘긴 판정.
      * tools/export_judgments.py가 가져갈 목록이다.

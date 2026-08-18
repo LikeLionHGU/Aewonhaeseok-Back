@@ -35,7 +35,7 @@ public enum ErrorCode {
             "검증 항목을 찾을 수 없습니다."),
 
     VERDICT_REQUIRED(HttpStatus.BAD_REQUEST,
-            "판정 값이 비어 있습니다. 맞음·아님 중 하나를 고르거나 표준코드를 직접 입력해 주세요."),
+            "판정 값이 비어 있습니다. 표준코드 또는 no_match를 입력해 주세요."),
 
     VERDICT_CANDIDATE_MISSING(HttpStatus.UNPROCESSABLE_CONTENT,
             "후보 표준코드가 없어 '승인'으로 판정할 수 없습니다. 표준코드를 직접 골라 주세요."),
@@ -43,8 +43,17 @@ public enum ErrorCode {
     VERDICT_CODE_UNKNOWN(HttpStatus.UNPROCESSABLE_CONTENT,
             "사전에 없는 표준코드입니다."),
 
+    REVIEW_STATUS_INVALID(HttpStatus.BAD_REQUEST,
+            "검수 상태는 pending 또는 all만 사용할 수 있습니다."),
+
     ANALYSIS_NOT_FOUND(HttpStatus.NOT_FOUND,
             "분석 기록을 찾을 수 없습니다."),
+
+    STANDARD_SCALE_REQUIRED(HttpStatus.BAD_REQUEST,
+            "기준치 조회에는 폐수배출규모(scale)가 필요합니다."),
+
+    STANDARD_SCALE_INVALID(HttpStatus.BAD_REQUEST,
+            "폐수배출규모는 large 또는 small만 사용할 수 있습니다."),
 
     MAPPER_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE,
             "매핑 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요."),

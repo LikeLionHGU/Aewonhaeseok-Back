@@ -31,6 +31,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedHashMap;
 
 /**
  * B5 — 매핑된 파일의 측정값을 DB에 적재한다.
@@ -49,12 +50,12 @@ public class MeasurementIngestService {
 
     private static final String INSERT_SQL = """
             INSERT INTO measurements (
-                file_id, mapping_run_id, source_column, source_row,
+                file_id, mapping_run_id, source_column, source_column_index, source_row,
                 site_name, outlet, sample_type,
                 measured_on, measured_at, period_label,
                 item_code, unit, value_num, value_text, is_numeric,
                 reported_limit, quality_flag, created_at
-            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             ON DUPLICATE KEY UPDATE
                 value_num = VALUES(value_num),
                 value_text = VALUES(value_text),
@@ -92,14 +93,30 @@ public class MeasurementIngestService {
     public Result ingest(Long fileId) {
         UploadedFile file = files.findById(fileId)
                 .orElseThrow(() -> new ApiException(ErrorCode.FILE_NOT_FOUND, Map.of("id", fileId)));
-        MappingRun run = runs.findFirstByFileIdOrderByRoundNoDesc(fileId)
+        MappingRun run = runs.findLatestWithColumns(fileId)
                 .orElseThrow(() -> new ApiException(ErrorCode.MAPPING_NOT_FOUND,
                         Map.of("file_id", fileId)));
 
         Path stored = Paths.get(file.getStoredPath());
         Counters counters = new Counters();
 
-        String dictionaryVersion = mapper.streamRows(stored, file.getOriginalFilename(),
+        Map<Integer, Map<String, Object>> overrides = new LinkedHashMap<>();
+        run.getColumns().stream()
+                .filter(column -> column.getCode() != null)
+                .forEach(column -> {
+                    Map<String, Object> override = new LinkedHashMap<>();
+                    override.put("code", column.getCode());
+                    if (column.getDictType() != null) {
+                        override.put("dict_type", column.getDictType());
+                    }
+                    overrides.put(column.getColumnIndex(), override);
+                });
+
+        // 파일 단위 교체 정책. 새 매핑 회차로 재적재해도 과거 값과 합쳐지지 않는다.
+        jdbc.update("DELETE FROM measurements WHERE file_id = ?", file.getId());
+        jdbc.update("DELETE FROM ingestion_runs WHERE file_id = ?", file.getId());
+
+        String dictionaryVersion = mapper.streamRows(stored, file.getOriginalFilename(), overrides,
                 reader -> consume(reader, file.getId(), run.getId(), counters));
 
         recordIngestionRun(file.getId(), run.getId(), dictionaryVersion, counters);
@@ -167,6 +184,7 @@ public class MeasurementIngestService {
                 fileId,
                 runId,
                 n.path("source_column").asText(""),
+                n.path("source_column_index").asInt(),
                 n.path("source_row").asInt(),
                 text(n, "site_name"),
                 text(n, "outlet"),

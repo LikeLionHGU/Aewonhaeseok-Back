@@ -238,6 +238,7 @@ def iter_records(frame: pd.DataFrame, columns: list[dict]) -> Iterator[dict]:
             yield {
                 "source_row": row,
                 "source_column": source_column,
+                "source_column_index": index,
                 "site_name": site,
                 "outlet": outlet,
                 "sample_type": sample_type,

@@ -25,7 +25,14 @@ public record AnalysisRequest(
         @JsonProperty("bucket") Bucket bucket,
         @JsonProperty("metric") Metric metric,
         @JsonProperty("standard_set") String standardSet,
-        @JsonProperty("region_grade") String regionGrade) {
+        @JsonProperty("region_grade") String regionGrade,
+        @JsonProperty("scale") Scale scale) {
+
+    /** 별표 13에서 BOD·TOC·SS 기준을 나누는 1일 폐수배출량 규모. */
+    public enum Scale {
+        large,
+        small
+    }
 
     /** 집계 단위. SQL 조각과 1:1로 대응하며 이 목록 밖의 값은 들어올 수 없다. */
     public enum Bucket {
@@ -82,7 +89,8 @@ public record AnalysisRequest(
                 bucket == null ? Bucket.month : bucket,
                 metric == null ? Metric.avg : metric,
                 standardSet == null ? "배출허용기준" : standardSet,
-                regionGrade);
+                regionGrade,
+                scale);
     }
 
     /** 사용자가 지정하지 않아 서버가 채운 항목. 화면이 "이렇게 해석했습니다"를 보여주는 데 쓴다. */
@@ -99,6 +107,9 @@ public record AnalysisRequest(
         }
         if (regionGrade == null) {
             assumed.add("지역구분을 지정하지 않아 기준선을 표시하지 않습니다");
+        }
+        if (scale == null) {
+            assumed.add("폐수배출규모를 지정하지 않아 규모별 기준선은 표시하지 않습니다");
         }
         return assumed;
     }

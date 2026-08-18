@@ -4,9 +4,12 @@ import com.awon.backend.mapping.MapperClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * B8 사전 운영.
@@ -30,6 +33,32 @@ public class DictionaryController {
     @GetMapping("/dictionary/version")
     public Map<String, Object> version() {
         return mapper.dictionaryVersion();
+    }
+
+    @GetMapping("/dictionary/terms")
+    public TermListResponse terms(
+            @RequestParam(required = false) String query,
+            @RequestParam(name = "dict_type", required = false) String dictType) {
+        String keyword = query == null ? "" : query.trim().toLowerCase(java.util.Locale.ROOT);
+        List<TermResponse> items = terms.terms().entrySet().stream()
+                .map(entry -> new TermResponse(
+                        entry.getKey(),
+                        String.valueOf(entry.getValue().get("name")),
+                        String.valueOf(entry.getValue().get("dict_type"))))
+                .filter(term -> keyword.isEmpty()
+                        || term.code().toLowerCase(java.util.Locale.ROOT).contains(keyword)
+                        || term.name().toLowerCase(java.util.Locale.ROOT).contains(keyword))
+                .filter(term -> dictType == null || dictType.isBlank()
+                        || dictType.equals(term.dictType()))
+                .sorted(Comparator.comparing(TermResponse::code))
+                .toList();
+        return new TermListResponse(items, items.size());
+    }
+
+    public record TermResponse(String code, String name, String dictType) {
+    }
+
+    public record TermListResponse(List<TermResponse> items, int total) {
     }
 
     /**

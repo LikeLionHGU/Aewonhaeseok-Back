@@ -1,5 +1,7 @@
 package com.awon.backend.standard;
 
+import com.awon.backend.common.ApiException;
+import com.awon.backend.common.ErrorCode;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,6 +54,9 @@ public class StandardController {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("sets", sets);
         body.put("region_grades", regions);
+        body.put("scales", List.of(
+                Map.of("value", "large", "label", "2,000㎥/일 이상"),
+                Map.of("value", "small", "label", "2,000㎥/일 미만")));
         // 화면에 경고를 띄울 수 있도록 미확인 건수를 함께 준다.
         body.put("unverified_count", unverified == null ? 0 : unverified);
         return body;
@@ -66,7 +71,10 @@ public class StandardController {
     public List<Map<String, Object>> limits(
             @RequestParam(name = "standard_set", defaultValue = "배출허용기준") String standardSet,
             @RequestParam(name = "region_grade", required = false) String regionGrade,
-            @RequestParam(name = "item_code", required = false) String itemCode) {
+            @RequestParam(name = "item_code", required = false) String itemCode,
+            @RequestParam(name = "scale") String scale) {
+
+        scale = validateRequiredScale(scale);
 
         StringBuilder sql = new StringBuilder("""
                 SELECT item_code, region_grade, scale, limit_min, limit_max, unit,
@@ -85,6 +93,8 @@ public class StandardController {
             sql.append(" AND item_code = ?");
             params.add(itemCode);
         }
+        sql.append(" AND (scale IS NULL OR scale = ?)");
+        params.add(scale);
         sql.append(" ORDER BY item_code, region_grade");
 
         return jdbc.queryForList(sql.toString(), params.toArray());
@@ -103,7 +113,10 @@ public class StandardController {
     public Map<String, Object> exceedances(
             @RequestParam(name = "standard_set", defaultValue = "배출허용기준") String standardSet,
             @RequestParam(name = "region_grade", defaultValue = "가지역") String regionGrade,
+            @RequestParam(name = "scale", required = false) String scale,
             @RequestParam(name = "file_id", required = false) Long fileId) {
+
+        scale = validateScale(scale);
 
         StringBuilder sql = new StringBuilder("""
                 SELECT m.site_name, m.outlet, m.sample_type, m.measured_on,
@@ -119,6 +132,7 @@ public class StandardController {
                     ON s.item_code = m.item_code
                    AND s.standard_set = ?
                    AND (s.region_grade IS NULL OR s.region_grade = ?)
+                   AND (s.scale IS NULL OR s.scale = ?)
                  WHERE m.value_num IS NOT NULL
                    AND (m.sample_type IS NULL OR m.sample_type <> '원폐수')
                    AND ((s.limit_max IS NOT NULL AND m.value_num > s.limit_max)
@@ -127,6 +141,7 @@ public class StandardController {
         List<Object> params = new ArrayList<>();
         params.add(standardSet);
         params.add(regionGrade);
+        params.add(scale == null ? "" : scale);
 
         if (fileId != null) {
             sql.append(" AND m.file_id = ?");
@@ -145,9 +160,27 @@ public class StandardController {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("standard_set", standardSet);
         body.put("region_grade", regionGrade);
+        body.put("scale", scale);
         body.put("exceeded_count", rows.size());
         body.put("limit_mismatch_count", mismatched);
         body.put("items", rows);
         return body;
+    }
+
+    private String validateScale(String scale) {
+        if (scale == null || scale.isBlank()) {
+            return null;
+        }
+        if (!scale.equals("large") && !scale.equals("small")) {
+            throw new ApiException(ErrorCode.STANDARD_SCALE_INVALID, Map.of("scale", scale));
+        }
+        return scale;
+    }
+
+    private String validateRequiredScale(String scale) {
+        if (scale == null || scale.isBlank()) {
+            throw new ApiException(ErrorCode.STANDARD_SCALE_REQUIRED, Map.of("scale", "required"));
+        }
+        return validateScale(scale);
     }
 }

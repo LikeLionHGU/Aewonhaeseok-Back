@@ -24,7 +24,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 import pandas as pd  # noqa: E402
-from fastapi import FastAPI, File, UploadFile  # noqa: E402
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile  # noqa: E402
 from fastapi.responses import JSONResponse, StreamingResponse  # noqa: E402
 
 from pipeline import config  # noqa: E402
@@ -183,6 +183,38 @@ def version_payload() -> dict:
     return state.version.as_dict()
 
 
+def parse_overrides(raw: str | None) -> dict[str, dict]:
+    """스프링이 보낸 파일별 검토 결과를 요청 시작 전에 검증한다."""
+    if not raw:
+        return {}
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise HTTPException(status_code=400, detail="overrides must be valid JSON") from exc
+    if not isinstance(parsed, dict):
+        raise HTTPException(status_code=400, detail="overrides must be a JSON object")
+    return parsed
+
+
+def apply_overrides(columns: list[dict], overrides: dict[str, dict]) -> None:
+    """사전을 바꾸지 않고 이번 파일의 확정 매핑만 덮어쓴다."""
+    for raw_index, override in overrides.items():
+        try:
+            index = int(raw_index)
+        except (TypeError, ValueError):
+            continue
+        if not (0 <= index < len(columns)) or not isinstance(override, dict):
+            continue
+        code = override.get("code")
+        if not isinstance(code, str) or not code.strip():
+            continue
+        columns[index]["code"] = code
+        if override.get("dict_type") is not None:
+            columns[index]["dict_type"] = override["dict_type"]
+        columns[index]["status"] = "exact"
+        columns[index]["via"] = "review"
+
+
 # ═══════════════════════════════════════════════════════════════════
 # 엔드포인트
 # ═══════════════════════════════════════════════════════════════════
@@ -258,7 +290,10 @@ async def map_upload(file: UploadFile = File(...)) -> JSONResponse:
 
 
 @app.post("/rows")
-async def map_rows(file: UploadFile = File(...)) -> StreamingResponse:
+async def map_rows(
+    file: UploadFile = File(...),
+    overrides: str | None = Form(None),
+) -> StreamingResponse:
     """파일을 세로형 측정값 레코드로 펴서 흘려보낸다.
 
     응답은 NDJSON(줄마다 JSON 객체 하나)이다. 첫 줄은 요약이고 그다음이 레코드다.
@@ -271,6 +306,7 @@ async def map_rows(file: UploadFile = File(...)) -> StreamingResponse:
     filename = file.filename or "upload.csv"
     suffix = Path(filename).suffix.lower() or ".csv"
     content = await file.read()
+    parsed_overrides = parse_overrides(overrides)
 
     def stream() -> Iterator[bytes]:
         with TemporaryDirectory() as tmpdir:
@@ -281,6 +317,9 @@ async def map_rows(file: UploadFile = File(...)) -> StreamingResponse:
             columns = [
                 to_column_payload(i, r, None) for i, r in enumerate(mapping.results)
             ]
+            # 스프링에 저장된 최신 매핑(사람 검수 포함)을 재적재에도 그대로 사용한다.
+            # 전역 사전은 변경하지 않고 해당 파일에만 적용되는 override다.
+            apply_overrides(columns, parsed_overrides)
             version = version_payload()
 
             measured = sum(

@@ -34,9 +34,11 @@ public class MapperClient {
     private static final Logger log = LoggerFactory.getLogger(MapperClient.class);
 
     private final RestClient client;
+    private final tools.jackson.databind.ObjectMapper json;
 
-    public MapperClient(RestClient mapperRestClient) {
+    public MapperClient(RestClient mapperRestClient, tools.jackson.databind.ObjectMapper json) {
         this.client = mapperRestClient;
+        this.json = json;
     }
 
     /** 파일 하나를 매핑한다. 실측상 9MB/104만 행이 0.33초라 동기로 처리한다. */
@@ -66,9 +68,11 @@ public class MapperClient {
      * @param consumer 줄 단위 처리기. 스트림이 닫히기 전에 소비를 끝내야 한다.
      */
     public <T> T streamRows(Path file, String originalFilename,
+                            Map<Integer, Map<String, Object>> overrides,
                             Function<BufferedReader, T> consumer) {
         MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
         form.add("file", new NamedFileResource(file, originalFilename));
+        form.add("overrides", json.writeValueAsString(overrides));
 
         try {
             return client.post()

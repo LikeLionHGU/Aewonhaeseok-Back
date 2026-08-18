@@ -13,8 +13,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /** B2 파일 접수. */
 @RestController
@@ -35,8 +39,10 @@ public class FileController {
      * <p>원본은 수정하지 않고 그대로 보관한다. 인코딩 판별과 헤더 탐지는
      * 매핑 실행 시점에 매핑 서비스가 수행한다.
      */
-    @PostMapping
-    public ResponseEntity<FileResponse> upload(@RequestParam("file") MultipartFile file) {
+    @Operation(summary = "수질·폐수 원본 파일 업로드")
+    @ApiResponse(responseCode = "201", description = "업로드 완료")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<FileResponse> upload(@RequestPart("file") MultipartFile file) {
         UploadedFile saved = service.upload(file);
         return ResponseEntity.status(HttpStatus.CREATED).body(FileResponse.of(saved));
     }

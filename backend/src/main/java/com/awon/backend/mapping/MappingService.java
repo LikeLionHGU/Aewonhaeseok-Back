@@ -5,6 +5,7 @@ import com.awon.backend.common.ErrorCode;
 import com.awon.backend.file.FileStatus;
 import com.awon.backend.file.UploadedFile;
 import com.awon.backend.file.UploadedFileRepository;
+import com.awon.backend.dictionary.TermNameCache;
 import com.awon.backend.mapping.dto.MapperResponse;
 import com.awon.backend.review.ReviewItem;
 import com.awon.backend.review.ReviewItemRepository;
@@ -15,6 +16,7 @@ import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,13 +27,16 @@ public class MappingService {
     private final MappingRunRepository runs;
     private final ReviewItemRepository reviews;
     private final MapperClient mapper;
+    private final TermNameCache terms;
 
     public MappingService(UploadedFileRepository files, MappingRunRepository runs,
-                          ReviewItemRepository reviews, MapperClient mapper) {
+                          ReviewItemRepository reviews, MapperClient mapper,
+                          TermNameCache terms) {
         this.files = files;
         this.runs = runs;
         this.reviews = reviews;
         this.mapper = mapper;
+        this.terms = terms;
     }
 
     /**
@@ -64,10 +69,22 @@ public class MappingService {
                 response.dictionaryHash(),
                 response.headerRow() == null ? 0 : response.headerRow());
 
+        Map<String, ReviewItem> previousByColumn = new LinkedHashMap<>();
+        for (ReviewItem item : reviews.findByFileIdOrderByCreatedAtDesc(fileId)) {
+            previousByColumn.putIfAbsent(columnKey(item.getRaw(), item.getSourceColumnIndex()), item);
+        }
+
         List<MapperResponse.Col> columns =
                 response.columns() == null ? List.of() : response.columns();
         for (int i = 0; i < columns.size(); i++) {
-            run.addColumn(toEntity(columns.get(i), i));
+            MappingColumn column = toEntity(columns.get(i), i);
+            ReviewItem previous = previousByColumn.get(
+                    columnKey(column.getRaw(), column.getColumnIndex()));
+            if (previous != null && previous.adoptedCode() != null) {
+                String code = previous.adoptedCode();
+                column.applyReview(code, terms.nameOf(code), terms.typeOf(code));
+            }
+            run.addColumn(column);
         }
         run.recount();
         runs.save(run);
@@ -75,13 +92,15 @@ public class MappingService {
         // 검증 대기열 생성. needs_review와 unmapped만 사람에게 넘긴다.
         for (int i = 0; i < columns.size(); i++) {
             MappingColumn column = run.getColumns().get(i);
-            if (column.getStatus().needsHuman()) {
+            if (column.getStatus().needsHuman() && !previousByColumn.containsKey(
+                    columnKey(column.getRaw(), column.getColumnIndex()))) {
                 reviews.save(new ReviewItem(column, fileId, toMap(columns.get(i).valueSummary())));
             }
         }
 
         file.describeAfterMapping(response.encodingDetected(), run.getHeaderRow());
-        file.markStatus(run.hasPendingReview() ? FileStatus.reviewing : FileStatus.completed);
+        file.markStatus(reviews.countByFileIdAndVerdictIsNull(fileId) > 0
+                ? FileStatus.reviewing : FileStatus.completed);
 
         return run;
     }
@@ -138,6 +157,10 @@ public class MappingService {
         map.put("samples", summary.samples());
         map.put("all_unique", summary.allUnique());
         return map;
+    }
+
+    private String columnKey(String raw, Integer columnIndex) {
+        return columnIndex + "\u0000" + raw;
     }
 
     /** 전후 비교의 상승폭. 1차와 마지막 회차의 차이다. */

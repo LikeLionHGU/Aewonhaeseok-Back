@@ -1,5 +1,8 @@
 package com.awon.backend.analysis;
 
+import com.awon.backend.common.ApiException;
+import com.awon.backend.common.ErrorCode;
+import com.awon.backend.common.PageResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -42,9 +45,11 @@ public class AnalysisService {
     private static final int QUERY_TIMEOUT_SECONDS = 10;
 
     private final JdbcTemplate jdbc;
+    private final tools.jackson.databind.ObjectMapper json;
 
-    public AnalysisService(JdbcTemplate jdbc) {
+    public AnalysisService(JdbcTemplate jdbc, tools.jackson.databind.ObjectMapper json) {
         this.jdbc = jdbc;
+        this.json = json;
     }
 
     public record Result(String executionId,
@@ -74,8 +79,8 @@ public class AnalysisService {
         String executionId = UUID.randomUUID().toString();
         String dictionaryVersion = latestDictionaryVersion();
 
-        record(executionId, request, sql, dictionaryVersion, series.size(),
-                exceeded, elapsedMs, truncated);
+        record(executionId, request, request.assumptions(), series, limits, sql,
+                dictionaryVersion, series.size(), exceeded, elapsedMs, truncated);
 
         Map<String, Object> meta = new LinkedHashMap<>();
         meta.put("execution_id", executionId);
@@ -88,6 +93,84 @@ public class AnalysisService {
         meta.put("generated_sql", sql);
 
         return new Result(executionId, request.assumptions(), series, limits, exceeded, meta);
+    }
+
+    public Map<String, Object> detail(String executionId) {
+        List<Map<String, Object>> found = jdbc.queryForList("""
+                SELECT execution_id, conditions, assumptions, series, limits, generated_sql,
+                       dictionary_version, ruleset_version, standard_set, region_grade, scale,
+                       row_count, exceeded_count, elapsed_ms, truncated, ran_at
+                  FROM analysis_runs
+                 WHERE execution_id = ?
+                """, executionId);
+        if (found.isEmpty()) {
+            throw new ApiException(ErrorCode.ANALYSIS_NOT_FOUND, Map.of("execution_id", executionId));
+        }
+        Map<String, Object> result = new LinkedHashMap<>(found.get(0));
+        parseJsonField(result, "conditions", Map.class, Map.of());
+        parseJsonField(result, "assumptions", List.class, List.of());
+        parseJsonField(result, "series", List.class, List.of());
+        parseJsonField(result, "limits", List.class, List.of());
+        return result;
+    }
+
+    public PageResponse<Map<String, Object>> history(int page, int size) {
+        int safePage = Math.max(1, page);
+        int safeSize = Math.min(200, Math.max(1, size));
+        int offset = (safePage - 1) * safeSize;
+        List<Map<String, Object>> rawItems = jdbc.queryForList("""
+                SELECT execution_id, conditions, dictionary_version, ruleset_version,
+                       standard_set, region_grade, scale, row_count, exceeded_count,
+                       elapsed_ms, truncated, ran_at
+                  FROM analysis_runs
+                 ORDER BY ran_at DESC
+                 LIMIT ? OFFSET ?
+                """, safeSize, offset);
+        List<Map<String, Object>> items = rawItems.stream().map(raw -> {
+            Map<String, Object> item = new LinkedHashMap<>(raw);
+            parseJsonField(item, "conditions", Map.class, Map.of());
+            return item;
+        }).toList();
+
+        Long total = jdbc.queryForObject("SELECT COUNT(*) FROM analysis_runs", Long.class);
+        return new PageResponse<>(items, safePage, safeSize, total == null ? 0 : total);
+    }
+
+    /** 분석 당시 조건에 해당하는 실제 적재 행. 근거 화면이 출처까지 추적할 때 쓴다. */
+    public PageResponse<Map<String, Object>> measurementRows(String executionId, int page, int size) {
+        Map<String, Object> detail = detail(executionId);
+        AnalysisRequest request;
+        try {
+            request = json.convertValue(detail.get("conditions"), AnalysisRequest.class).withDefaults();
+        } catch (RuntimeException e) {
+            throw new ApiException(ErrorCode.ANALYSIS_NOT_FOUND,
+                    Map.of("execution_id", executionId, "cause", "conditions_unreadable"));
+        }
+
+        int safePage = Math.max(1, page);
+        int safeSize = Math.min(200, Math.max(1, size));
+        List<Object> params = new ArrayList<>();
+        String where = measurementWhere(request, params);
+
+        List<Object> rowParams = new ArrayList<>(params);
+        rowParams.add(safeSize);
+        rowParams.add((safePage - 1) * safeSize);
+        List<Map<String, Object>> rows = jdbc.queryForList("""
+                SELECT m.id AS measurement_id, m.file_id, f.original_filename AS filename,
+                       m.source_row, m.source_column, m.source_column_index,
+                       m.site_name, m.outlet, m.sample_type,
+                       m.measured_on, m.measured_at, m.period_label, m.item_code, m.unit,
+                       m.value_num, m.value_text, m.is_numeric, m.reported_limit, m.quality_flag
+                  FROM measurements m
+                  JOIN files f ON f.id = m.file_id
+                """ + where + """
+                 ORDER BY m.measured_on, m.file_id, m.source_row, m.source_column_index
+                 LIMIT ? OFFSET ?
+                """, rowParams.toArray());
+
+        Long total = jdbc.queryForObject("SELECT COUNT(*) FROM measurements m" + where,
+                Long.class, params.toArray());
+        return new PageResponse<>(rows, safePage, safeSize, total == null ? 0 : total);
     }
 
     /**
@@ -142,6 +225,27 @@ public class AnalysisService {
         params.addAll(values);
     }
 
+    private String measurementWhere(AnalysisRequest r, List<Object> params) {
+        StringBuilder where = new StringBuilder(" WHERE 1 = 1\n");
+        appendIn(where, params, "m.site_name", r.siteNames());
+        appendIn(where, params, "m.outlet", r.outlets());
+        appendIn(where, params, "m.item_code", r.itemCodes());
+        if (r.sampleType() != null && !r.sampleType().isBlank()) {
+            where.append(" AND m.sample_type = ?\n");
+            params.add(r.sampleType());
+        }
+        if (r.from() != null) {
+            where.append(" AND m.measured_on >= ?\n");
+            params.add(java.sql.Date.valueOf(r.from()));
+        }
+        if (r.to() != null) {
+            where.append(" AND m.measured_on <= ?\n");
+            params.add(java.sql.Date.valueOf(r.to()));
+        }
+        where.append(" AND m.measured_on IS NOT NULL\n");
+        return where.toString();
+    }
+
     private List<Map<String, Object>> query(String sql, List<Object> params) {
         return jdbc.query(connection -> {
             var ps = connection.prepareStatement(sql);
@@ -166,12 +270,14 @@ public class AnalysisService {
             return List.of();
         }
         StringBuilder sql = new StringBuilder("""
-                SELECT item_code, limit_min, limit_max, unit, source, legal_basis
+                SELECT item_code, scale, limit_min, limit_max, unit, source, legal_basis
                   FROM standard_limits
                  WHERE standard_set = ?
                    AND (region_grade IS NULL OR region_grade = ?)
+                   AND (scale IS NULL OR scale = ?)
                 """);
-        List<Object> params = new ArrayList<>(List.of(r.standardSet(), r.regionGrade()));
+        String scale = r.scale() == null ? "" : r.scale().name();
+        List<Object> params = new ArrayList<>(List.of(r.standardSet(), r.regionGrade(), scale));
         appendIn(sql, params, "item_code", r.itemCodes());
         return jdbc.queryForList(sql.toString(), params.toArray());
     }
@@ -209,25 +315,48 @@ public class AnalysisService {
         return versions.isEmpty() ? null : versions.get(0);
     }
 
-    private void record(String executionId, AnalysisRequest r, String sql, String dictionaryVersion,
+    private void record(String executionId, AnalysisRequest r, List<String> assumptions,
+                        List<Map<String, Object>> series, List<Map<String, Object>> limits,
+                        String sql, String dictionaryVersion,
                         int rowCount, int exceeded, int elapsedMs, boolean truncated) {
         String conditions;
+        String assumptionsJson;
+        String seriesJson;
+        String limitsJson;
         try {
-            conditions = new tools.jackson.databind.ObjectMapper().writeValueAsString(r);
+            conditions = json.writeValueAsString(r);
+            assumptionsJson = json.writeValueAsString(assumptions);
+            seriesJson = json.writeValueAsString(series);
+            limitsJson = json.writeValueAsString(limits);
         } catch (RuntimeException e) {
-            log.warn("조건 직렬화 실패", e);
-            conditions = "{}";
+            throw new IllegalStateException("분석 결과 직렬화 실패", e);
         }
         jdbc.update("""
                 INSERT INTO analysis_runs (
-                    execution_id, conditions, generated_sql,
+                    execution_id, conditions, assumptions, series, limits, generated_sql,
                     dictionary_version, ruleset_version, standard_set, region_grade,
-                    row_count, exceeded_count, elapsed_ms, truncated, ran_at
-                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+                    scale, row_count, exceeded_count, elapsed_ms, truncated, ran_at
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,
-                executionId, conditions, sql,
+                executionId, conditions, assumptionsJson, seriesJson, limitsJson, sql,
                 dictionaryVersion, RULESET_VERSION, r.standardSet(), r.regionGrade(),
+                r.scale() == null ? null : r.scale().name(),
                 rowCount, exceeded, elapsedMs, truncated,
                 Timestamp.valueOf(OffsetDateTime.now().toLocalDateTime()));
+    }
+
+    private void parseJsonField(Map<String, Object> target, String field, Class<?> type,
+                                Object fallback) {
+        Object raw = target.get(field);
+        if (raw == null) {
+            target.put(field, fallback);
+            return;
+        }
+        try {
+            target.put(field, json.readValue(String.valueOf(raw), type));
+        } catch (RuntimeException e) {
+            log.warn("저장된 분석 JSON을 읽지 못함: {}", field, e);
+            target.put(field, fallback);
+        }
     }
 }

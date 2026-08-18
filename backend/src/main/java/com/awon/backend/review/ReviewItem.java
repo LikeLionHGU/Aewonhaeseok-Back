@@ -31,6 +31,7 @@ public class ReviewItem {
     /** 판정 칸에 쓸 수 있는 값은 세 가지뿐이다: 승인 · 기각 · 표준코드 직접 기입. */
     public static final String VERDICT_ACCEPT = "승인";
     public static final String VERDICT_REJECT = "기각";
+    public static final String VERDICT_NO_MATCH = "no_match";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,6 +46,9 @@ public class ReviewItem {
 
     @Column(name = "raw", nullable = false, length = 500)
     private String raw;
+
+    @Column(name = "source_column_index", nullable = false)
+    private Integer sourceColumnIndex;
 
     @Column(name = "mapping_status", nullable = false, length = 20)
     private String mappingStatus;
@@ -95,6 +99,7 @@ public class ReviewItem {
         this.mappingColumn = column;
         this.fileId = fileId;
         this.raw = column.getRaw();
+        this.sourceColumnIndex = column.getColumnIndex();
         this.mappingStatus = column.getStatus().name();
         this.candidateCode = column.getCandidateCode();
         this.score = column.getScore();
@@ -116,10 +121,14 @@ public class ReviewItem {
 
     /** 이 판정이 채택하려는 표준코드. 기각이면 null. */
     public String adoptedCode() {
-        if (verdict == null || VERDICT_REJECT.equals(verdict)) {
+        if (verdict == null || VERDICT_NO_MATCH.equals(verdict)
+                || VERDICT_REJECT.equals(verdict) || "rejected".equalsIgnoreCase(verdict)) {
             return null;
         }
-        return VERDICT_ACCEPT.equals(verdict) ? candidateCode : verdict;
+        if (VERDICT_ACCEPT.equals(verdict) || "approved".equalsIgnoreCase(verdict)) {
+            return candidateCode;
+        }
+        return verdict;
     }
 
     public void markExported() {
@@ -148,6 +157,10 @@ public class ReviewItem {
 
     public String getRaw() {
         return raw;
+    }
+
+    public Integer getSourceColumnIndex() {
+        return sourceColumnIndex;
     }
 
     public String getMappingStatus() {

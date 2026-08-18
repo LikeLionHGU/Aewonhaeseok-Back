@@ -5,6 +5,7 @@ import com.awon.backend.common.ErrorCode;
 import com.awon.backend.common.PageResponse;
 import com.awon.backend.dictionary.TermNameCache;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
@@ -74,7 +75,9 @@ public class ReviewController {
     }
 
     public record VerdictRequest(
-            @NotBlank(message = "판정 값이 비어 있습니다.") String verdict,
+            @NotBlank(message = "판정 값이 비어 있습니다.")
+            @Schema(description = "후보/직접 선택 표준코드 또는 매칭 없음(no_match)",
+                    example = "no_match") String verdict,
             String note,
             @JsonProperty("reviewed_by") String reviewedBy) {
 
@@ -119,14 +122,20 @@ public class ReviewController {
     public static class ReviewService {
 
         private final ReviewItemRepository items;
+        private final TermNameCache terms;
 
-        public ReviewService(ReviewItemRepository items) {
+        public ReviewService(ReviewItemRepository items, TermNameCache terms) {
             this.items = items;
+            this.terms = terms;
         }
 
         @Transactional(readOnly = true)
         public Page<ReviewItem> list(Long fileId, String status, PageRequest pageable) {
-            boolean pendingOnly = !"all".equalsIgnoreCase(status);
+            if (!"pending".equalsIgnoreCase(status) && !"all".equalsIgnoreCase(status)) {
+                throw new ApiException(ErrorCode.REVIEW_STATUS_INVALID,
+                        Map.of("status", status, "allowed", java.util.List.of("pending", "all")));
+            }
+            boolean pendingOnly = "pending".equalsIgnoreCase(status);
             if (fileId == null) {
                 return pendingOnly ? items.findByVerdictIsNull(pageable) : items.findAll(pageable);
             }
@@ -149,11 +158,25 @@ public class ReviewController {
             if (trimmed.isEmpty()) {
                 throw new ApiException(ErrorCode.VERDICT_REQUIRED);
             }
-            // '승인'인데 후보가 없으면 무엇을 채택할지 알 수 없다.
-            if (ReviewItem.VERDICT_ACCEPT.equals(trimmed) && item.getCandidateCode() == null) {
+
+            boolean acceptCandidate = ReviewItem.VERDICT_ACCEPT.equals(trimmed)
+                    || "approved".equalsIgnoreCase(trimmed);
+            boolean noMatch = ReviewItem.VERDICT_NO_MATCH.equalsIgnoreCase(trimmed)
+                    || ReviewItem.VERDICT_REJECT.equals(trimmed)
+                    || "rejected".equalsIgnoreCase(trimmed)
+                    || "none".equalsIgnoreCase(trimmed)
+                    || "unmapped".equalsIgnoreCase(trimmed);
+
+            // 후보 승인인데 후보가 없으면 무엇을 채택할지 알 수 없다.
+            if (acceptCandidate && item.getCandidateCode() == null) {
                 throw new ApiException(ErrorCode.VERDICT_CANDIDATE_MISSING, Map.of("raw", item.getRaw()));
             }
-            item.decide(trimmed, note, reviewer);
+            String canonical = acceptCandidate ? item.getCandidateCode()
+                    : noMatch ? ReviewItem.VERDICT_NO_MATCH : trimmed;
+            if (!ReviewItem.VERDICT_NO_MATCH.equals(canonical) && !terms.contains(canonical)) {
+                throw new ApiException(ErrorCode.VERDICT_CODE_UNKNOWN, Map.of("code", trimmed));
+            }
+            item.decide(canonical, note, reviewer);
             return item;
         }
     }

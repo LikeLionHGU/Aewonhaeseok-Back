@@ -44,6 +44,20 @@ public class TermNameCache {
         return term == null ? null : (String) term.get("name");
     }
 
+    public boolean contains(String code) {
+        return code != null && terms().containsKey(code);
+    }
+
+    public String typeOf(String code) {
+        Map<String, Object> term = terms().get(code);
+        return term == null ? null : String.valueOf(term.get("dict_type"));
+    }
+
+    public Map<String, Map<String, Object>> terms() {
+        Map<String, Map<String, Object>> terms = cache.get();
+        return terms == null ? load() : terms;
+    }
+
     /** 사전이 바뀌었을 때 비운다. 리로드 엔드포인트가 부른다. */
     public void invalidate() {
         cache.set(null);

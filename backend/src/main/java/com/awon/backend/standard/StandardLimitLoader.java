@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,13 +24,12 @@ import java.util.List;
 /**
  * 기준치 표를 CSV에서 읽어 적재한다.
  *
- * <p>Flyway 마이그레이션에 값을 박아 넣지 않은 이유: 지금 들어 있는 숫자는
- * 법령 원문과 대조하기 전의 임시값이다. 마이그레이션에 넣으면 고칠 때마다
- * 새 버전을 만들어야 하는데, 기준치는 법 개정으로 실제로 바뀌는 값이다.
+ * <p>Flyway 마이그레이션에 값을 박아 넣지 않은 이유: 기준치는 법 개정으로
+ * 실제로 바뀌는 값이라 CSV를 버전 관리하고 다시 띄우면 동기화되게 한다.
  * CSV를 고치고 다시 띄우면 반영되는 편이 운영에 맞는다.
  *
- * <p><b>중요:</b> 지금 CSV의 값은 전부 {@code source=demo}다. 법령 원문에서
- * 옮겨 확인한 뒤 {@code law}로 바꿔야 발표나 실제 판정에 쓸 수 있다.
+ * <p>CSV를 먼저 전부 파싱한 뒤 한 트랜잭션에서 기존 세트를 교체한다. 파싱이나
+ * 적재가 실패하면 기존 기준치가 그대로 남는다.
  */
 @Configuration
 public class StandardLimitLoader {
@@ -55,7 +56,8 @@ public class StandardLimitLoader {
             """;
 
     @Bean
-    public ApplicationRunner loadStandardLimits(JdbcTemplate jdbc) {
+    public ApplicationRunner loadStandardLimits(JdbcTemplate jdbc,
+                                                 PlatformTransactionManager transactionManager) {
         return args -> {
             ClassPathResource resource = new ClassPathResource(CSV_PATH);
             if (!resource.exists()) {
@@ -86,7 +88,11 @@ public class StandardLimitLoader {
             if (rows.isEmpty()) {
                 return;
             }
-            jdbc.batchUpdate(UPSERT, rows);
+            TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+            transaction.executeWithoutResult(status -> {
+                jdbc.update("DELETE FROM standard_limits WHERE standard_set = ?", "배출허용기준");
+                jdbc.batchUpdate(UPSERT, rows);
+            });
 
             Integer demo = jdbc.queryForObject(
                     "SELECT COUNT(*) FROM standard_limits WHERE source = 'demo'", Integer.class);

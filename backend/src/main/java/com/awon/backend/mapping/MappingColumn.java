@@ -106,6 +106,20 @@ public class MappingColumn {
         this.run = run;
     }
 
+    /** 사람 판정을 파일 단위 override로 적용한다. 전역 사전 CSV는 건드리지 않는다. */
+    public void applyReview(String adoptedCode, String standardName, String adoptedDictType) {
+        this.status = MappingStatus.exact;
+        this.via = "review";
+        this.code = adoptedCode;
+        this.candidateCode = null;
+        this.matchedVariant = standardName;
+        this.dictType = adoptedDictType != null ? adoptedDictType
+                : (adoptedCode.startsWith("WQ-") ? "측정항목" : "메타");
+        this.outputColumn = site == null || site.isBlank()
+                ? adoptedCode : adoptedCode + "@" + site;
+        this.score = null;
+    }
+
     public Long getId() {
         return id;
     }

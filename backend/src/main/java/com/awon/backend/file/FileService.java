@@ -9,6 +9,7 @@ import com.awon.backend.review.ReviewItemRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,13 +23,15 @@ public class FileService {
     private final MappingRunRepository runs;
     private final ReviewItemRepository reviews;
     private final FileStorage storage;
+    private final JdbcTemplate jdbc;
 
     public FileService(UploadedFileRepository files, MappingRunRepository runs,
-                       ReviewItemRepository reviews, FileStorage storage) {
+                       ReviewItemRepository reviews, FileStorage storage, JdbcTemplate jdbc) {
         this.files = files;
         this.runs = runs;
         this.reviews = reviews;
         this.storage = storage;
+        this.jdbc = jdbc;
     }
 
     @Transactional
@@ -64,6 +67,27 @@ public class FileService {
         Optional<MappingRun> latest = runs.findFirstByFileIdOrderByRoundNoDesc(file.getId());
         Integer columnCount = latest.map(MappingRun::getTotalColumns).orElse(null);
         long pending = reviews.countByFileIdAndVerdictIsNull(file.getId());
-        return FileResponse.of(file, columnCount, pending);
+        java.util.Map<String, Object> period = jdbc.queryForMap("""
+                SELECT MIN(measured_on) AS measured_from, MAX(measured_on) AS measured_to
+                  FROM measurements WHERE file_id = ?
+                """, file.getId());
+        return FileResponse.of(
+                file,
+                columnCount,
+                pending,
+                toLocalDate(period.get("measured_from")),
+                toLocalDate(period.get("measured_to")),
+                latest.map(MappingRun::getDictionaryVersion).orElse(null),
+                latest.map(MappingRun::getAutoMappedRate).orElse(null));
+    }
+
+    private java.time.LocalDate toLocalDate(Object value) {
+        if (value instanceof java.sql.Date date) {
+            return date.toLocalDate();
+        }
+        if (value instanceof java.time.LocalDate date) {
+            return date;
+        }
+        return null;
     }
 }
