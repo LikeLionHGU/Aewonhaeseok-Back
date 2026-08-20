@@ -1,5 +1,6 @@
 package com.awon.backend.measurement;
 
+import com.awon.backend.auth.CurrentUser;
 import com.awon.backend.common.ApiException;
 import com.awon.backend.common.ErrorCode;
 import com.awon.backend.file.UploadedFile;
@@ -69,13 +70,15 @@ public class MeasurementIngestService {
     private final MapperClient mapper;
     private final JdbcTemplate jdbc;
     private final ObjectMapper json = new ObjectMapper();
+    private final CurrentUser currentUser;
 
     public MeasurementIngestService(UploadedFileRepository files, MappingRunRepository runs,
-                                    MapperClient mapper, JdbcTemplate jdbc) {
+                                    MapperClient mapper, JdbcTemplate jdbc, CurrentUser currentUser) {
         this.files = files;
         this.runs = runs;
         this.mapper = mapper;
         this.jdbc = jdbc;
+        this.currentUser = currentUser;
     }
 
     public record Result(long fileId, long mappingRunId, String dictionaryVersion,
@@ -91,7 +94,7 @@ public class MeasurementIngestService {
      */
     @Transactional
     public Result ingest(Long fileId) {
-        UploadedFile file = files.findById(fileId)
+        UploadedFile file = files.findByIdAndOwnerUserId(fileId, currentUser.id())
                 .orElseThrow(() -> new ApiException(ErrorCode.FILE_NOT_FOUND, Map.of("id", fileId)));
         MappingRun run = runs.findLatestWithColumns(fileId)
                 .orElseThrow(() -> new ApiException(ErrorCode.MAPPING_NOT_FOUND,

@@ -71,6 +71,17 @@ awon:
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
 
+  auth:
+    # 운영 기본값은 인증 필수다. 로컬 호환 테스트가 필요할 때만 명시적으로 false로 내린다.
+    required: ${AUTH_REQUIRED:true}
+    jwt-secret: ${JWT_SECRET:local-development-secret-change-before-production-2026}
+    access-token-seconds: ${JWT_ACCESS_TOKEN_SECONDS:28800}
+    cookie-name: ${AUTH_COOKIE_NAME:AWON_ACCESS_TOKEN}
+    cookie-secure: ${AUTH_COOKIE_SECURE:true}
+    same-site: ${AUTH_COOKIE_SAME_SITE:Strict}
+    legacy-admin-id: ${LEGACY_ADMIN_ID:1}
+    bootstrap-admin-password: ${BOOTSTRAP_ADMIN_PASSWORD:}
+
 logging:
   level:
     com.awon.backend: DEBUG

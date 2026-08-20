@@ -2,6 +2,8 @@ package com.awon.backend.standard;
 
 import com.awon.backend.common.ApiException;
 import com.awon.backend.common.ErrorCode;
+import com.awon.backend.auth.CurrentUser;
+import com.awon.backend.file.FileService;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,7 +17,8 @@ import static org.mockito.Mockito.mock;
 
 class StandardControllerTest {
 
-    private final StandardController controller = new StandardController(mock(JdbcTemplate.class));
+    private final StandardController controller = new StandardController(
+            mock(JdbcTemplate.class), mock(CurrentUser.class), mock(FileService.class));
 
     @Test
     void limitsRequiresScaleInHttpContract() throws Exception {

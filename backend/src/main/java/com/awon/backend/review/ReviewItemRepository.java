@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReviewItemRepository extends JpaRepository<ReviewItem, Long> {
 
@@ -15,6 +16,21 @@ public interface ReviewItemRepository extends JpaRepository<ReviewItem, Long> {
     Page<ReviewItem> findByVerdictIsNull(Pageable pageable);
 
     Page<ReviewItem> findByFileId(Long fileId, Pageable pageable);
+
+    @Query("select r from ReviewItem r, UploadedFile f where r.fileId = f.id and f.ownerUserId = :ownerId and r.verdict is null")
+    Page<ReviewItem> findOwnedPending(Long ownerId, Pageable pageable);
+
+    @Query("select r from ReviewItem r, UploadedFile f where r.fileId = f.id and f.ownerUserId = :ownerId")
+    Page<ReviewItem> findOwned(Long ownerId, Pageable pageable);
+
+    @Query("select r from ReviewItem r, UploadedFile f where r.fileId = f.id and f.ownerUserId = :ownerId and r.fileId = :fileId and r.verdict is null")
+    Page<ReviewItem> findOwnedPendingByFile(Long ownerId, Long fileId, Pageable pageable);
+
+    @Query("select r from ReviewItem r, UploadedFile f where r.fileId = f.id and f.ownerUserId = :ownerId and r.fileId = :fileId")
+    Page<ReviewItem> findOwnedByFile(Long ownerId, Long fileId, Pageable pageable);
+
+    @Query("select r from ReviewItem r, UploadedFile f where r.fileId = f.id and f.ownerUserId = :ownerId and r.id = :id")
+    Optional<ReviewItem> findOwnedById(Long ownerId, Long id);
 
     long countByFileIdAndVerdictIsNull(Long fileId);
 

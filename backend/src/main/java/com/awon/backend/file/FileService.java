@@ -1,5 +1,6 @@
 package com.awon.backend.file;
 
+import com.awon.backend.auth.CurrentUser;
 import com.awon.backend.common.ApiException;
 import com.awon.backend.common.ErrorCode;
 import com.awon.backend.file.dto.FileResponse;
@@ -24,20 +25,25 @@ public class FileService {
     private final ReviewItemRepository reviews;
     private final FileStorage storage;
     private final JdbcTemplate jdbc;
+    private final CurrentUser currentUser;
 
     public FileService(UploadedFileRepository files, MappingRunRepository runs,
-                       ReviewItemRepository reviews, FileStorage storage, JdbcTemplate jdbc) {
+                       ReviewItemRepository reviews, FileStorage storage, JdbcTemplate jdbc,
+                       CurrentUser currentUser) {
         this.files = files;
         this.runs = runs;
         this.reviews = reviews;
         this.storage = storage;
         this.jdbc = jdbc;
+        this.currentUser = currentUser;
     }
 
     @Transactional
     public UploadedFile upload(MultipartFile multipart) {
-        FileStorage.Stored stored = storage.store(multipart);
+        long ownerId = currentUser.id();
+        FileStorage.Stored stored = storage.store(multipart, ownerId);
         UploadedFile file = new UploadedFile(
+                ownerId,
                 multipart.getOriginalFilename(),
                 stored.path().toString(),
                 stored.sha256(),
@@ -48,13 +54,15 @@ public class FileService {
 
     @Transactional(readOnly = true)
     public UploadedFile get(Long id) {
-        return files.findById(id)
+        return files.findByIdAndOwnerUserId(id, currentUser.id())
                 .orElseThrow(() -> new ApiException(ErrorCode.FILE_NOT_FOUND, Map.of("id", id)));
     }
 
     @Transactional(readOnly = true)
     public Page<UploadedFile> list(FileStatus status, Pageable pageable) {
-        return status == null ? files.findAll(pageable) : files.findByStatus(status, pageable);
+        long ownerId = currentUser.id();
+        return status == null ? files.findByOwnerUserId(ownerId, pageable)
+                : files.findByOwnerUserIdAndStatus(ownerId, status, pageable);
     }
 
     /**

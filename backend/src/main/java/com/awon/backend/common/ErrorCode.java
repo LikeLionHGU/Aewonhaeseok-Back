@@ -10,6 +10,42 @@ import org.springframework.http.HttpStatus;
  */
 public enum ErrorCode {
 
+    AUTH_REQUIRED(HttpStatus.UNAUTHORIZED,
+            "로그인이 필요합니다."),
+
+    AUTH_INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED,
+            "이메일 또는 비밀번호가 올바르지 않습니다."),
+
+    AUTH_EMAIL_ALREADY_USED(HttpStatus.CONFLICT,
+            "이미 사용 중인 이메일입니다."),
+
+    OPEN_API_KEY_REQUIRED(HttpStatus.UNAUTHORIZED,
+            "X-API-Key 헤더가 필요합니다."),
+
+    OPEN_API_KEY_INVALID(HttpStatus.UNAUTHORIZED,
+            "유효하지 않거나 폐기된 API 키입니다."),
+
+    OPEN_API_RATE_LIMITED(HttpStatus.TOO_MANY_REQUESTS,
+            "API 호출 한도를 초과했습니다."),
+
+    OPEN_API_COLUMNS_INVALID(HttpStatus.BAD_REQUEST,
+            "매핑할 컬럼을 1개 이상 200개 이하로 보내 주세요."),
+
+    ORGANIZATION_ALREADY_EXISTS(HttpStatus.CONFLICT,
+            "이미 등록된 기업명입니다."),
+
+    ORGANIZATION_NOT_FOUND(HttpStatus.NOT_FOUND,
+            "기업을 찾을 수 없습니다."),
+
+    OPEN_API_ORGANIZATION_FORBIDDEN(HttpStatus.FORBIDDEN,
+            "다른 기업의 API 키를 관리할 수 없습니다."),
+
+    OPEN_API_ACTIVE_KEY_LIMIT(HttpStatus.CONFLICT,
+            "활성 API 키는 기업당 최대 5개까지 발급할 수 있습니다."),
+
+    STANDARD_CODE_UNKNOWN(HttpStatus.UNPROCESSABLE_CONTENT,
+            "수질 표준 사전에 없는 코드입니다."),
+
     FILE_FORMAT_UNSUPPORTED(HttpStatus.BAD_REQUEST,
             "지원하지 않는 파일 형식입니다. 엑셀(xlsx, xls, xlsm) 또는 CSV만 올릴 수 있습니다."),
 

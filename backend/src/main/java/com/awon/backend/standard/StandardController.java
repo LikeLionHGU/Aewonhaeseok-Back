@@ -1,5 +1,7 @@
 package com.awon.backend.standard;
 
+import com.awon.backend.auth.CurrentUser;
+import com.awon.backend.file.FileService;
 import com.awon.backend.common.ApiException;
 import com.awon.backend.common.ErrorCode;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,9 +21,13 @@ import java.util.Map;
 public class StandardController {
 
     private final JdbcTemplate jdbc;
+    private final CurrentUser currentUser;
+    private final FileService files;
 
-    public StandardController(JdbcTemplate jdbc) {
+    public StandardController(JdbcTemplate jdbc, CurrentUser currentUser, FileService files) {
         this.jdbc = jdbc;
+        this.currentUser = currentUser;
+        this.files = files;
     }
 
     /**
@@ -117,6 +123,7 @@ public class StandardController {
             @RequestParam(name = "file_id", required = false) Long fileId) {
 
         scale = validateScale(scale);
+        if (fileId != null) files.get(fileId);
 
         StringBuilder sql = new StringBuilder("""
                 SELECT m.site_name, m.outlet, m.sample_type, m.measured_on,
@@ -128,12 +135,14 @@ public class StandardController {
                          WHEN s.limit_min IS NOT NULL AND m.value_num < s.limit_min THEN '하한 미달'
                        END AS verdict
                   FROM measurements m
+                  JOIN files f ON f.id = m.file_id
                   JOIN standard_limits s
                     ON s.item_code = m.item_code
                    AND s.standard_set = ?
                    AND (s.region_grade IS NULL OR s.region_grade = ?)
                    AND (s.scale IS NULL OR s.scale = ?)
                  WHERE m.value_num IS NOT NULL
+                   AND f.owner_user_id = ?
                    AND (m.sample_type IS NULL OR m.sample_type <> '원폐수')
                    AND ((s.limit_max IS NOT NULL AND m.value_num > s.limit_max)
                      OR (s.limit_min IS NOT NULL AND m.value_num < s.limit_min))
@@ -142,6 +151,7 @@ public class StandardController {
         params.add(standardSet);
         params.add(regionGrade);
         params.add(scale == null ? "" : scale);
+        params.add(currentUser.id());
 
         if (fileId != null) {
             sql.append(" AND m.file_id = ?");

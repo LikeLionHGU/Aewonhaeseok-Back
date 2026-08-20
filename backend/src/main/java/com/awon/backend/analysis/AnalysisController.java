@@ -1,5 +1,6 @@
 package com.awon.backend.analysis;
 
+import com.awon.backend.auth.CurrentUser;
 import com.awon.backend.common.PageResponse;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,10 +21,12 @@ public class AnalysisController {
 
     private final AnalysisService service;
     private final JdbcTemplate jdbc;
+    private final CurrentUser currentUser;
 
-    public AnalysisController(AnalysisService service, JdbcTemplate jdbc) {
+    public AnalysisController(AnalysisService service, JdbcTemplate jdbc, CurrentUser currentUser) {
         this.service = service;
         this.jdbc = jdbc;
+        this.currentUser = currentUser;
     }
 
     /**
@@ -46,27 +49,30 @@ public class AnalysisController {
      */
     @GetMapping("/analyses/options")
     public Map<String, Object> options() {
+        long ownerId = currentUser.id();
         return Map.of(
                 "sites", jdbc.queryForList("""
-                        SELECT DISTINCT site_name FROM measurements
-                         WHERE site_name IS NOT NULL ORDER BY site_name
-                        """, String.class),
+                        SELECT DISTINCT m.site_name FROM measurements m JOIN files f ON f.id=m.file_id
+                         WHERE f.owner_user_id=? AND m.site_name IS NOT NULL ORDER BY m.site_name
+                        """, String.class, ownerId),
                 "outlets", jdbc.queryForList("""
-                        SELECT DISTINCT outlet FROM measurements
-                         WHERE outlet IS NOT NULL ORDER BY outlet
-                        """, String.class),
+                        SELECT DISTINCT m.outlet FROM measurements m JOIN files f ON f.id=m.file_id
+                         WHERE f.owner_user_id=? AND m.outlet IS NOT NULL ORDER BY m.outlet
+                        """, String.class, ownerId),
                 "items", jdbc.queryForList("""
-                        SELECT item_code, COUNT(*) AS n
-                          FROM measurements GROUP BY item_code ORDER BY item_code
-                        """),
+                        SELECT m.item_code, COUNT(*) AS n
+                          FROM measurements m JOIN files f ON f.id=m.file_id
+                         WHERE f.owner_user_id=? GROUP BY m.item_code ORDER BY m.item_code
+                        """, ownerId),
                 "sample_types", jdbc.queryForList("""
-                        SELECT DISTINCT sample_type FROM measurements
-                         WHERE sample_type IS NOT NULL ORDER BY sample_type
-                        """, String.class),
+                        SELECT DISTINCT m.sample_type FROM measurements m JOIN files f ON f.id=m.file_id
+                         WHERE f.owner_user_id=? AND m.sample_type IS NOT NULL ORDER BY m.sample_type
+                        """, String.class, ownerId),
                 "period", jdbc.queryForMap("""
-                        SELECT MIN(measured_on) AS first_date, MAX(measured_on) AS last_date
-                          FROM measurements WHERE measured_on IS NOT NULL
-                        """),
+                        SELECT MIN(m.measured_on) AS first_date, MAX(m.measured_on) AS last_date
+                          FROM measurements m JOIN files f ON f.id=m.file_id
+                         WHERE f.owner_user_id=? AND m.measured_on IS NOT NULL
+                        """, ownerId),
                 "buckets", List.of("month", "quarter", "year", "none"),
                 "metrics", List.of("avg", "max", "min", "count"),
                 "scales", List.of(

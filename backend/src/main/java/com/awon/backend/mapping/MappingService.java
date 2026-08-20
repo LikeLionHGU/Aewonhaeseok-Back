@@ -1,5 +1,6 @@
 package com.awon.backend.mapping;
 
+import com.awon.backend.auth.CurrentUser;
 import com.awon.backend.common.ApiException;
 import com.awon.backend.common.ErrorCode;
 import com.awon.backend.file.FileStatus;
@@ -28,15 +29,17 @@ public class MappingService {
     private final ReviewItemRepository reviews;
     private final MapperClient mapper;
     private final TermNameCache terms;
+    private final CurrentUser currentUser;
 
     public MappingService(UploadedFileRepository files, MappingRunRepository runs,
                           ReviewItemRepository reviews, MapperClient mapper,
-                          TermNameCache terms) {
+                          TermNameCache terms, CurrentUser currentUser) {
         this.files = files;
         this.runs = runs;
         this.reviews = reviews;
         this.mapper = mapper;
         this.terms = terms;
+        this.currentUser = currentUser;
     }
 
     /**
@@ -47,8 +50,7 @@ public class MappingService {
      */
     @Transactional
     public MappingRun run(Long fileId) {
-        UploadedFile file = files.findById(fileId)
-                .orElseThrow(() -> new ApiException(ErrorCode.FILE_NOT_FOUND, Map.of("id", fileId)));
+        UploadedFile file = ownedFile(fileId);
 
         file.markStatus(FileStatus.mapping);
 
@@ -108,6 +110,7 @@ public class MappingService {
     /** 저장된 결과를 컬럼까지 채워서 돌려준다. 응답을 만들 때는 이걸 쓴다. */
     @Transactional(readOnly = true)
     public MappingRun latest(Long fileId) {
+        ownedFile(fileId);
         return runs.findLatestWithColumns(fileId)
                 .orElseThrow(() -> new ApiException(ErrorCode.MAPPING_NOT_FOUND,
                         Map.of("file_id", fileId)));
@@ -115,7 +118,13 @@ public class MappingService {
 
     @Transactional(readOnly = true)
     public List<MappingRun> history(Long fileId) {
+        ownedFile(fileId);
         return runs.findByFileIdOrderByRoundNoAsc(fileId);
+    }
+
+    private UploadedFile ownedFile(Long fileId) {
+        return files.findByIdAndOwnerUserId(fileId, currentUser.id())
+                .orElseThrow(() -> new ApiException(ErrorCode.FILE_NOT_FOUND, Map.of("id", fileId)));
     }
 
     private MappingColumn toEntity(MapperResponse.Col col, int fallbackIndex) {

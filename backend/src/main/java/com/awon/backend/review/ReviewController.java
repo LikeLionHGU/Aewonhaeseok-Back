@@ -1,5 +1,6 @@
 package com.awon.backend.review;
 
+import com.awon.backend.auth.CurrentUser;
 import com.awon.backend.common.ApiException;
 import com.awon.backend.common.ErrorCode;
 import com.awon.backend.common.PageResponse;
@@ -123,10 +124,13 @@ public class ReviewController {
 
         private final ReviewItemRepository items;
         private final TermNameCache terms;
+        private final CurrentUser currentUser;
 
-        public ReviewService(ReviewItemRepository items, TermNameCache terms) {
+        public ReviewService(ReviewItemRepository items, TermNameCache terms,
+                             CurrentUser currentUser) {
             this.items = items;
             this.terms = terms;
+            this.currentUser = currentUser;
         }
 
         @Transactional(readOnly = true)
@@ -136,12 +140,14 @@ public class ReviewController {
                         Map.of("status", status, "allowed", java.util.List.of("pending", "all")));
             }
             boolean pendingOnly = "pending".equalsIgnoreCase(status);
+            long ownerId = currentUser.id();
             if (fileId == null) {
-                return pendingOnly ? items.findByVerdictIsNull(pageable) : items.findAll(pageable);
+                return pendingOnly ? items.findOwnedPending(ownerId, pageable)
+                        : items.findOwned(ownerId, pageable);
             }
             return pendingOnly
-                    ? items.findByFileIdAndVerdictIsNull(fileId, pageable)
-                    : items.findByFileId(fileId, pageable);
+                    ? items.findOwnedPendingByFile(ownerId, fileId, pageable)
+                    : items.findOwnedByFile(ownerId, fileId, pageable);
         }
 
         /**
@@ -151,7 +157,7 @@ public class ReviewController {
          */
         @Transactional
         public ReviewItem decide(Long id, String verdict, String note, String reviewer) {
-            ReviewItem item = items.findById(id).orElseThrow(
+            ReviewItem item = items.findOwnedById(currentUser.id(), id).orElseThrow(
                     () -> new ApiException(ErrorCode.REVIEW_NOT_FOUND, Map.of("id", id)));
 
             String trimmed = verdict == null ? "" : verdict.trim();
@@ -176,7 +182,7 @@ public class ReviewController {
             if (!ReviewItem.VERDICT_NO_MATCH.equals(canonical) && !terms.contains(canonical)) {
                 throw new ApiException(ErrorCode.VERDICT_CODE_UNKNOWN, Map.of("code", trimmed));
             }
-            item.decide(canonical, note, reviewer);
+            item.decide(canonical, note, currentUser.reviewerName(reviewer));
             return item;
         }
     }

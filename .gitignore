@@ -12,3 +12,10 @@ legal/
 
 # 전달용으로 생성한 명세서 사본 (api-spec.html에서 만들어짐)
 backend/물어볼래_API명세서_*.html
+
+# Codex 문서·스프레드시트 생성 중 만들어지는 로컬 작업물
+.artifact_work/
+outputs/**/node_modules/
+outputs/**/build_*.mjs
+outputs/**/preview.png
+~$*.xlsx

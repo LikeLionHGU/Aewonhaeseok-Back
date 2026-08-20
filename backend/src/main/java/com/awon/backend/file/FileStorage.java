@@ -50,7 +50,7 @@ public class FileStorage {
      * 파일을 저장하면서 동시에 SHA-256을 계산한다.
      * 두 번 읽지 않기 위해 스트림에 다이제스트를 물린다.
      */
-    public Stored store(MultipartFile file) {
+    public Stored store(MultipartFile file, long ownerUserId) {
         if (file.isEmpty()) {
             throw new ApiException(ErrorCode.FILE_EMPTY);
         }
@@ -60,7 +60,8 @@ public class FileStorage {
                     Map.of("given", extension, "allowed", ALLOWED_EXTENSIONS));
         }
 
-        Path directory = root.resolve(LocalDate.now().format(DATE_DIR));
+        Path directory = root.resolve("users").resolve(String.valueOf(ownerUserId))
+                .resolve(LocalDate.now().format(DATE_DIR));
         Path target = directory.resolve(UUID.randomUUID() + "." + extension);
 
         try {

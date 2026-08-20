@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>수질 데이터 표준화 서비스 시연 영상 대본</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --panel: #0f1d2e;
+      --panel-soft: #14263a;
+      --line: #29425d;
+      --text: #eef5ff;
+      --muted: #a9b8ca;
+      --blue: #5da7ff;
+      --cyan: #52d3c7;
+      --amber: #f5b94c;
+      --red: #ff8383;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 85% 5%, rgba(82, 211, 199, .13), transparent 30rem),
+        radial-gradient(circle at 5% 20%, rgba(93, 167, 255, .14), transparent 28rem),
+        var(--bg);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif;
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+
+    .wrap {
+      width: min(1040px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 64px 0 96px;
+    }
+
+    header {
+      padding: 48px;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: linear-gradient(135deg, rgba(20, 38, 58, .96), rgba(10, 25, 41, .96));
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .28);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--cyan);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(32px, 6vw, 55px);
+      line-height: 1.16;
+      letter-spacing: -.04em;
+    }
+
+    header .lead {
+      max-width: 800px;
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .chip {
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: #dbeaff;
+      background: rgba(93, 167, 255, .08);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .flow {
+      margin: 28px 0 42px;
+      padding: 22px 26px;
+      border-left: 4px solid var(--cyan);
+      border-radius: 8px 18px 18px 8px;
+      background: rgba(82, 211, 199, .08);
+      color: #dffef9;
+      font-weight: 700;
+    }
+
+    section {
+      margin-top: 24px;
+      padding: 32px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(15, 29, 46, .93);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 54px 1fr auto;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .num {
+      display: grid;
+      place-items: center;
+      width: 54px;
+      height: 54px;
+      border-radius: 17px;
+      color: #06101b;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      font-size: 19px;
+      font-weight: 900;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -.025em;
+    }
+
+    .time {
+      color: var(--amber);
+      font-size: 14px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .cue {
+      margin: 0 0 18px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      color: var(--blue);
+      background: rgba(93, 167, 255, .09);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .script {
+      margin: 0;
+      padding: 22px 24px;
+      border-left: 3px solid var(--blue);
+      border-radius: 6px 14px 14px 6px;
+      background: var(--panel-soft);
+      font-size: 17px;
+    }
+
+    .script + .script { margin-top: 14px; }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .result {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(7, 17, 31, .45);
+    }
+
+    .result strong {
+      display: block;
+      color: var(--cyan);
+      font-size: 25px;
+    }
+
+    .review-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .mapping {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 14px;
+      align-items: center;
+      padding: 13px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(7, 17, 31, .4);
+    }
+
+    .arrow { color: var(--amber); font-weight: 900; }
+
+    .note, .warning {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-radius: 12px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, .035);
+      font-size: 14px;
+    }
+
+    .warning {
+      border: 1px solid rgba(255, 131, 131, .35);
+      color: #ffd5d5;
+      background: rgba(255, 131, 131, .07);
+    }
+
+    code {
+      padding: 2px 7px;
+      border-radius: 6px;
+      color: #d9f5ff;
+      background: #07111f;
+      font-family: Consolas, Monaco, monospace;
+    }
+
+    pre {
+      overflow-x: auto;
+      margin: 18px 0 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #050d17;
+      color: #d9f5ff;
+    }
+
+    .closing {
+      margin-top: 38px;
+      padding: 30px;
+      border: 1px solid rgba(82, 211, 199, .35);
+      border-radius: 20px;
+      text-align: center;
+      background: rgba(82, 211, 199, .07);
+    }
+
+    .closing strong {
+      display: block;
+      font-size: 21px;
+    }
+
+    footer {
+      margin-top: 30px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+    }
+
+    @media (max-width: 760px) {
+      .wrap { width: min(100% - 22px, 1040px); padding-top: 22px; }
+      header, section { padding: 24px; border-radius: 18px; }
+      .section-head { grid-template-columns: 46px 1fr; }
+      .num { width: 46px; height: 46px; border-radius: 14px; }
+      .time { grid-column: 2; }
+      .result-grid { grid-template-columns: repeat(2, 1fr); }
+      .mapping { grid-template-columns: 1fr; gap: 5px; }
+    }
+
+    @media print {
+      body { color: #111; background: #fff; }
+      .wrap { width: 100%; padding: 0; }
+      header, section, .flow, .closing {
+        color: #111;
+        background: #fff;
+        border-color: #bbb;
+        box-shadow: none;
+        break-inside: avoid;
+      }
+      .lead, .note, footer { color: #444 !important; }
+      .script, .result, .mapping, pre { color: #111; background: #f6f7f8; }
+      code { color: #111; background: #eee; }
+      .cue, .time, .eyebrow { color: #145fa8; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <p class="eyebrow">Demo Scenario</p>
+      <h1>수질 데이터 표준화 서비스<br>시연 영상 대본</h1>
+      <p class="lead">애매한 현장 데이터를 업로드해 용어를 표준화하고, 법적 기준에 따라 분석한 뒤 Open API로 기업 시스템까지 연결하는 전체 시연 흐름입니다.</p>
+      <div class="meta">
+        <span class="chip">권장 길이 5분 내외</span>
+        <span class="chip">표준화 + 검토</span>
+        <span class="chip">수질 분석</span>
+        <span class="chip">Open API 발급</span>
+      </div>
+    </header>
+
+    <div class="flow">로그인 → 파일 업로드 → 자동 매핑 → 사용자 검토 → 지역·규모별 분석 → Open API 키 발급 → 기업 시스템 연동</div>
+
+    <section>
+      <div class="section-head"><span class="num">01</span><h2>서비스 소개</h2><span class="time">0:00–0:25</span></div>
+      <p class="cue">화면: 메인 화면 또는 서비스 소개 화면</p>
+      <p class="script">기관과 기업마다 서로 다른 형식으로 작성된 수질 데이터는 통합과 분석에 많은 수작업이 필요합니다. 저희 서비스는 수질 데이터의 용어를 표준화하고, 법적 배출허용기준을 바탕으로 데이터를 분석하며, 기업이 자체 시스템에서도 기능을 사용할 수 있도록 Open API를 제공합니다.</p>
+    </section>
+
+    <section>
+      <div class="section-head"><span class="num">02</span><h2>로그인과 사용자별 데이터 관리</h2><span class="time">0:25–0:45</span></div>
+      <p class="cue">화면: 로그인 후 대시보드 진입</p>
+      <p class="script">먼저 사용자 계정으로 로그인합니다. 업로드한 파일과 매핑, 검토 및 분석 기록은 계정별로 분리되어 다른 사용자의 데이터와 섞이지 않습니다.</p>
+      <p class="warning">촬영 시 실제 비밀번호가 노출되지 않도록 자동 완성을 사용하거나 입력 장면을 편집하세요.</p>
+    </section>
+
+    <section>
+      <div class="section-head"><span class="num">03</span><h2>애매한 수질 데이터 업로드</h2><span class="time">0:45–1:10</span></div>
+      <p class="cue">화면: 애매한_수질용어_시연.xlsx 선택 후 업로드</p>
+      <p class="script">실제 현장에서는 표준 명칭뿐만 아니라 축약어와 오타, 기관별 표현이 함께 사용됩니다. 이번에는 이러한 애매한 항목이 포함된 엑셀 파일을 업로드해 보겠습니다.</p>
+      <p class="script">파일에는 BOD처럼 명확한 항목과 함께 ‘생물학산소요구’, ‘화학적산소’, ‘총질쏘’처럼 표준 명칭과 다른 표현이 포함되어 있습니다.</p>
+    </section>
+
+    <section>
+      <div class="section-head"><span class="num">04</span><h2>자동 매핑 결과</h2><span class="time">1:10–1:50</span></div>
+      <p class="cue">화면: 컬럼별 매핑 결과와 상태별 개수</p>
+      <p class="script">업로드된 컬럼은 표준 사전과 비교되어 정확 매핑, 자동 매핑, 검토 필요, 미매핑 상태로 분류됩니다. 측정일자와 BOD는 정확히 매핑됐고, 사업장명과 생물학산소요구는 유사도에 따라 각각 ‘사업장 명칭’과 ‘생물학적 산소요구량’으로 자동 매핑됐습니다.</p>
+      <div class="result-grid">
+        <div class="result"><strong>2</strong>정확 매핑</div>
+        <div class="result"><strong>2</strong>자동 매핑</div>
+        <div class="result"><strong>3</strong>검토 필요</div>
+        <div class="result"><strong>4</strong>미매핑</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head"><span class="num">05</span><h2>애매한 항목 검토</h2><span class="time">1:50–2:30</span></div>
+      <p class="cue">화면: 검토 필요 항목의 추천 후보와 유사도 점수</p>
+      <p class="script">신뢰도가 충분하지 않은 항목은 시스템이 임의로 확정하지 않고 검토 대상으로 분리합니다. 사용자는 추천 항목과 유사도 점수를 확인해 결과를 승인하거나 직접 수정할 수 있습니다.</p>
+      <div class="review-list">
+        <div class="mapping"><strong>화학적산소</strong><span class="arrow">→</span><span>화학적산소요구량 추천</span></div>
+        <div class="mapping"><strong>방류구번호</strong><span class="arrow">→</span><span>방류구 추천</span></div>
+        <div class="mapping"><strong>클로로필농도</strong><span class="arrow">→</span><span>클로로필 추천</span></div>
+      </div>
+      <p class="script">반면 ‘현장메모’와 같이 측정 항목인지 불분명한 데이터는 미매핑으로 남겨 잘못된 자동 변환을 방지합니다.</p>
+    </section>
+
+    <section>
+      <div class="section-head"><span class="num">06</span><h2>수질 데이터 분석</h2><span class="time">2:30–3:30</span></div>
+      <p class="cue">화면: 분석 대상 선택 → 지역·사업장 규모 선택 → 분석 실행</p>
+      <p class="script">표준화가 완료된 데이터는 별도의 재가공 없이 수질 분석에 활용할 수 있습니다. 배출허용기준은 지역과 사업장 규모에 따라 달라질 수 있으므로, 분석 조건에서 청정지역, 가지역, 나지역과 같은 지역 구분과 사업장 규모를 선택합니다.</p>
+      <p class="script">분석을 실행하면 측정값과 법적 배출허용기준을 비교하여 각 항목의 상태를 판정합니다. 예를 들어 BOD 측정값과 선택한 지역 및 규모에 해당하는 기준치를 비교해 정상 또는 기준 초과 여부를 확인할 수 있습니다.</p>
+      <p class="script">결과에는 단순한 판정뿐만 아니라 적용된 기준값과 지역, 사업장 규모, 법적 근거가 함께 제공됩니다. 이를 통해 사용자는 어떤 기준으로 결과가 도출됐는지 확인할 수 있습니다.</p>
+      <p class="note">화면에 표시되는 상태 명칭이 ‘정상·주의·초과’와 다르면 실제 화면의 명칭을 그대로 읽으세요.</p>
+    </section>
+
+    <section>
+      <div class="section-head"><span class="num">07</span><h2>분석 기록 확인</h2><span class="time">3:30–3:50</span></div>
+      <p class="cue">화면: 분석 기록 또는 데이터 활용 기록</p>
+      <p class="script">수행한 분석은 사용자 계정에 저장됩니다. 사용자는 이전 분석 결과와 적용 기준을 다시 확인할 수 있으며, 다른 계정의 기록은 조회할 수 없습니다.</p>
+    </section>
+
+    <section>
+      <div class="section-head"><span class="num">08</span><h2>Open API 소개</h2><span class="time">3:50–4:15</span></div>
+      <p class="cue">화면: Open API 소개 페이지</p>
+      <p class="script">기업이 저희 웹사이트를 직접 사용하지 않아도 기존 업무 시스템에서 같은 기능을 활용할 수 있도록 Open API도 제공합니다. 기업은 Open API를 통해 수질 데이터의 컬럼 매핑, 추천 후보 확인, 파일 단위 표준화와 검토 결과 반영 기능을 자사 시스템에 연동할 수 있습니다.</p>
+    </section>
+
+    <section>
+      <div class="section-head"><span class="num">09</span><h2>Open API 키 신청 및 발급</h2><span class="time">4:15–4:50</span></div>
+      <p class="cue">화면: 조직명·사용 목적·요청 한도 입력 → API 키 발급</p>
+      <p class="script">사용자는 조직명과 API 사용 목적, 요청 한도 등의 정보를 입력해 API 키를 발급받습니다. 발급된 키는 기업을 식별하고 호출 권한과 사용량을 관리하는 데 사용됩니다.</p>
+      <p class="script">보안을 위해 발급된 원본 키는 처음 생성됐을 때만 확인할 수 있으므로 안전한 곳에 보관해야 합니다.</p>
+      <p class="warning">영상에는 실제 운영용 API 키 전체를 노출하지 마세요. 중간 부분을 가리거나 촬영 후 즉시 폐기할 시연용 키를 사용하세요.</p>
+    </section>
+
+    <section>
+      <div class="section-head"><span class="num">10</span><h2>Open API 사용 방법</h2><span class="time">4:50–5:15</span></div>
+      <p class="cue">화면: 사용 안내 또는 Swagger API 문서</p>
+      <p class="script">기업은 발급받은 키를 요청 헤더의 X-API-Key에 입력해 API를 호출할 수 있습니다. 컬럼 목록이나 파일을 전달하면 표준코드, 추천 항목, 매핑 상태와 유사도 점수를 응답받을 수 있습니다. 따라서 기업은 기존 데이터 관리 시스템이나 업무 프로그램에 수질 데이터 표준화 기능을 직접 연결할 수 있습니다.</p>
+      <pre><code>X-API-Key: 발급받은_API_KEY</code></pre>
+    </section>
+
+    <section>
+      <div class="section-head"><span class="num">11</span><h2>마무리</h2><span class="time">5:15–5:35</span></div>
+      <p class="cue">화면: 메인 화면 또는 전체 기능 요약 화면</p>
+      <p class="script">저희 서비스는 수질 데이터의 용어를 자동으로 표준화하고, 애매한 항목은 사람의 검토를 거쳐 정확도를 보완합니다. 표준화된 데이터는 법적 기준을 기반으로 분석할 수 있으며, Open API를 통해 기업의 기존 시스템에도 연동할 수 있습니다. 이를 통해 수질 데이터 정리부터 검토, 분석, 시스템 연동까지 하나의 흐름으로 제공합니다.</p>
+    </section>
+
+    <div class="closing">
+      <strong>발표 핵심 문장</strong>
+      “확실한 데이터는 자동으로 처리하고, 애매한 데이터는 사람의 검토로 보완하며, 표준화된 결과를 분석과 Open API까지 연결합니다.”
+    </div>
+
+    <footer>수질 데이터 표준화·분석 및 Open API 서비스 시연용 대본</footer>
+  </main>
+</body>
+</html>

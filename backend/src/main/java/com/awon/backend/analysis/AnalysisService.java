@@ -1,5 +1,6 @@
 package com.awon.backend.analysis;
 
+import com.awon.backend.auth.CurrentUser;
 import com.awon.backend.common.ApiException;
 import com.awon.backend.common.ErrorCode;
 import com.awon.backend.common.PageResponse;
@@ -46,10 +47,13 @@ public class AnalysisService {
 
     private final JdbcTemplate jdbc;
     private final tools.jackson.databind.ObjectMapper json;
+    private final CurrentUser currentUser;
 
-    public AnalysisService(JdbcTemplate jdbc, tools.jackson.databind.ObjectMapper json) {
+    public AnalysisService(JdbcTemplate jdbc, tools.jackson.databind.ObjectMapper json,
+                           CurrentUser currentUser) {
         this.jdbc = jdbc;
         this.json = json;
+        this.currentUser = currentUser;
     }
 
     public record Result(String executionId,
@@ -63,9 +67,10 @@ public class AnalysisService {
     @Transactional
     public Result run(AnalysisRequest raw) {
         AnalysisRequest request = raw.withDefaults();
+        long ownerId = currentUser.id();
 
         List<Object> params = new ArrayList<>();
-        String sql = buildSql(request, params);
+        String sql = buildSql(request, params, ownerId);
 
         long started = System.nanoTime();
         List<Map<String, Object>> series = query(sql, params);
@@ -77,10 +82,10 @@ public class AnalysisService {
         int exceeded = countExceeded(series, limits);
 
         String executionId = UUID.randomUUID().toString();
-        String dictionaryVersion = latestDictionaryVersion();
+        String dictionaryVersion = latestDictionaryVersion(ownerId);
 
         record(executionId, request, request.assumptions(), series, limits, sql,
-                dictionaryVersion, series.size(), exceeded, elapsedMs, truncated);
+                dictionaryVersion, series.size(), exceeded, elapsedMs, truncated, ownerId);
 
         Map<String, Object> meta = new LinkedHashMap<>();
         meta.put("execution_id", executionId);
@@ -100,9 +105,9 @@ public class AnalysisService {
                 SELECT execution_id, conditions, assumptions, series, limits, generated_sql,
                        dictionary_version, ruleset_version, standard_set, region_grade, scale,
                        row_count, exceeded_count, elapsed_ms, truncated, ran_at
-                  FROM analysis_runs
-                 WHERE execution_id = ?
-                """, executionId);
+                 FROM analysis_runs
+                 WHERE execution_id = ? AND owner_user_id = ?
+                """, executionId, currentUser.id());
         if (found.isEmpty()) {
             throw new ApiException(ErrorCode.ANALYSIS_NOT_FOUND, Map.of("execution_id", executionId));
         }
@@ -123,16 +128,19 @@ public class AnalysisService {
                        standard_set, region_grade, scale, row_count, exceeded_count,
                        elapsed_ms, truncated, ran_at
                   FROM analysis_runs
+                 WHERE owner_user_id = ?
                  ORDER BY ran_at DESC
                  LIMIT ? OFFSET ?
-                """, safeSize, offset);
+                """, currentUser.id(), safeSize, offset);
         List<Map<String, Object>> items = rawItems.stream().map(raw -> {
             Map<String, Object> item = new LinkedHashMap<>(raw);
             parseJsonField(item, "conditions", Map.class, Map.of());
             return item;
         }).toList();
 
-        Long total = jdbc.queryForObject("SELECT COUNT(*) FROM analysis_runs", Long.class);
+        Long total = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM analysis_runs WHERE owner_user_id = ?",
+                Long.class, currentUser.id());
         return new PageResponse<>(items, safePage, safeSize, total == null ? 0 : total);
     }
 
@@ -150,7 +158,7 @@ public class AnalysisService {
         int safePage = Math.max(1, page);
         int safeSize = Math.min(200, Math.max(1, size));
         List<Object> params = new ArrayList<>();
-        String where = measurementWhere(request, params);
+        String where = measurementWhere(request, params, currentUser.id());
 
         List<Object> rowParams = new ArrayList<>(params);
         rowParams.add(safeSize);
@@ -180,7 +188,7 @@ public class AnalysisService {
      * {@code value_num IS NULL}로 남아 있다. 집계에서 이들을 제외하되 몇 건이
      * 제외됐는지 함께 센다 — 조용히 빼면 평균이 왜곡된 줄 모른다.
      */
-    private String buildSql(AnalysisRequest r, List<Object> params) {
+    private String buildSql(AnalysisRequest r, List<Object> params, long ownerId) {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT ").append(r.bucket().expression()).append(" AS bucket,\n")
            .append("       m.item_code,\n")
@@ -189,7 +197,8 @@ public class AnalysisService {
            .append("       SUM(CASE WHEN m.value_num IS NULL THEN 1 ELSE 0 END) AS missing,\n")
            .append("       MIN(m.unit) AS unit\n")
            .append("  FROM measurements m\n")
-           .append(" WHERE 1 = 1\n");
+           .append(" WHERE EXISTS (SELECT 1 FROM files f_owner WHERE f_owner.id = m.file_id AND f_owner.owner_user_id = ?)\n");
+        params.add(ownerId);
 
         appendIn(sql, params, "m.site_name", r.siteNames());
         appendIn(sql, params, "m.outlet", r.outlets());
@@ -225,8 +234,9 @@ public class AnalysisService {
         params.addAll(values);
     }
 
-    private String measurementWhere(AnalysisRequest r, List<Object> params) {
-        StringBuilder where = new StringBuilder(" WHERE 1 = 1\n");
+    private String measurementWhere(AnalysisRequest r, List<Object> params, long ownerId) {
+        StringBuilder where = new StringBuilder(" WHERE EXISTS (SELECT 1 FROM files f_owner WHERE f_owner.id = m.file_id AND f_owner.owner_user_id = ?)\n");
+        params.add(ownerId);
         appendIn(where, params, "m.site_name", r.siteNames());
         appendIn(where, params, "m.outlet", r.outlets());
         appendIn(where, params, "m.item_code", r.itemCodes());
@@ -308,17 +318,19 @@ public class AnalysisService {
     }
 
     /** 적재에 쓰인 사전 버전. 여러 파일이 섞여 있으면 가장 최근 것을 쓴다. */
-    private String latestDictionaryVersion() {
+    private String latestDictionaryVersion(long ownerId) {
         List<String> versions = jdbc.queryForList(
-                "SELECT dictionary_version FROM ingestion_runs ORDER BY ran_at DESC LIMIT 1",
-                String.class);
+                "SELECT ir.dictionary_version FROM ingestion_runs ir JOIN files f ON f.id = ir.file_id "
+                        + "WHERE f.owner_user_id = ? ORDER BY ir.ran_at DESC LIMIT 1",
+                String.class, ownerId);
         return versions.isEmpty() ? null : versions.get(0);
     }
 
     private void record(String executionId, AnalysisRequest r, List<String> assumptions,
                         List<Map<String, Object>> series, List<Map<String, Object>> limits,
                         String sql, String dictionaryVersion,
-                        int rowCount, int exceeded, int elapsedMs, boolean truncated) {
+                        int rowCount, int exceeded, int elapsedMs, boolean truncated,
+                        long ownerId) {
         String conditions;
         String assumptionsJson;
         String seriesJson;
@@ -333,12 +345,12 @@ public class AnalysisService {
         }
         jdbc.update("""
                 INSERT INTO analysis_runs (
-                    execution_id, conditions, assumptions, series, limits, generated_sql,
+                    owner_user_id, execution_id, conditions, assumptions, series, limits, generated_sql,
                     dictionary_version, ruleset_version, standard_set, region_grade,
                     scale, row_count, exceeded_count, elapsed_ms, truncated, ran_at
-                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,
-                executionId, conditions, assumptionsJson, seriesJson, limitsJson, sql,
+                ownerId, executionId, conditions, assumptionsJson, seriesJson, limitsJson, sql,
                 dictionaryVersion, RULESET_VERSION, r.standardSet(), r.regionGrade(),
                 r.scale() == null ? null : r.scale().name(),
                 rowCount, exceeded, elapsedMs, truncated,

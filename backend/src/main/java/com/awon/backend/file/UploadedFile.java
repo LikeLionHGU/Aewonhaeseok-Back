@@ -25,6 +25,9 @@ public class UploadedFile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "owner_user_id", nullable = false)
+    private Long ownerUserId;
+
     @Column(name = "original_filename", nullable = false, length = 500)
     private String originalFilename;
 
@@ -60,8 +63,9 @@ public class UploadedFile {
         // JPA
     }
 
-    public UploadedFile(String originalFilename, String storedPath, String contentHash,
+    public UploadedFile(Long ownerUserId, String originalFilename, String storedPath, String contentHash,
                         long sizeBytes, String contentType) {
+        this.ownerUserId = ownerUserId;
         this.originalFilename = originalFilename;
         this.storedPath = storedPath;
         this.contentHash = contentHash;
@@ -84,6 +88,8 @@ public class UploadedFile {
     public Long getId() {
         return id;
     }
+
+    public Long getOwnerUserId() { return ownerUserId; }
 
     public String getOriginalFilename() {
         return originalFilename;
